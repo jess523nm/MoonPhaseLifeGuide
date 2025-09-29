@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moon Phase Life Compass — v0.1</title>
+  <!-- Tailwind via CDN for fast prototyping -->
+  <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    
+        .phase-title { text-align:center; }
+        .phase-title .kicker { font-size:.85rem; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
+        .phase-title .rule { width:72px; height:2px; margin:.35rem auto .5rem; background:rgba(231,238,255,.35); border-radius:999px; }
+        .phase-title .big { font-size:1.25rem; line-height:1.1; font-weight:600; }
+
+    
+        /* Highlight the section that matches the current phase */
+        .is-current {
+          outline: 2px solid rgba(139,184,255,.55);
+          box-shadow:
+            inset 0 0 24px rgba(139,184,255,.18),
+            0 0 28px rgba(139,184,255,.12);
+        }
+        
+        .phase-badge {
+          display: inline-block;
+          margin-left: .6rem;
+          padding: .2rem .5rem;
+          border-radius: .5rem;
+          background: rgba(139,184,255,.18);
+          border: 1px solid rgba(139,184,255,.35);
+          font-size: .75rem;
+          color: var(--ink);
+        }
+
+        .phase-ring {
+          --ring-rot: 0deg;
+          position: relative; width: 300px; height: 300px; margin: 0 auto;
+          border-radius: 9999px;
+          background: radial-gradient(60% 60% at 50% 50%, rgba(139,184,255,.18), transparent 70%);
+          box-shadow: inset 0 0 30px rgba(139,184,255,.18);
+          transform: rotate(var(--ring-rot));
+        }
+        .phase-ring .dot { position:absolute; transform:translate(-50%,-50%) rotate(calc(-1 * var(--ring-rot))); }
+        .phase-ring .node {
+          display:flex; align-items:center; gap:.5rem;
+          padding:.5rem .8rem; border-radius:9999px;
+          background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2);
+          backdrop-filter: blur(6px); font-size:.85rem;
+        }
+        .phase-ring .pip {
+          width:.6rem; height:.6rem; border-radius:9999px;
+          background:linear-gradient(#fff, #9fb6ff);
+          box-shadow:0 0 10px rgba(139,184,255,.65);
+        }
+
+        .phase-ring { position: relative; width: 260px; height: 260px; margin: 0 auto; }
+        .phase-ring .dot { position: absolute; transform: translate(-50%, -50%); }
+        .phase-ring button {
+          background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2);
+          color: var(--ink); padding: .5rem .75rem; border-radius: 9999px; font-size: .8rem;
+          backdrop-filter: blur(6px);
+        }
+
+      /* ===== Night-sky App Theme ===== */
+      :root{
+        --ink:#e8ecf7;            /* primary text (near-white) */
+        --muted:#c7d0e6;          /* secondary text */
+        --paper: #0a0f1d;         /* deepest backdrop overlay */
+        --glass: rgba(8,12,24,.55); /* card background (glass) */
+        --glass-border: rgba(173,197,255,.15);
+        --chip-border: rgba(231,238,255,.25);
+        --accent:#8bb8ff;         /* moonlight blue */
+      }
+    
+      /* Background image (no 'fixed' for iOS perf) */
+      html,body{height:100%}
+      body{
+        color:var(--ink);
+        background:
+          radial-gradient(1200px 800px at 70% -10%, rgba(150,120,220,.15), transparent 55%),
+          radial-gradient(1000px 700px at 20% 110%, rgba(120,160,255,.12), transparent 45%),
+          #000 url("starry-bg.png") center/cover no-repeat;
+        -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+      }
+    
+      .watercolor{filter:saturate(1.05) contrast(1.04)}
+      .card{
+        background: var(--glass);
+        backdrop-filter: blur(8px) saturate(1.05);
+        -webkit-backdrop-filter: blur(8px) saturate(1.05);
+        border: 1px solid var(--glass-border);
+      }
+      .moon-glow{
+        box-shadow:
+          0 0 30px rgba(255,255,255,.6),
+          0 0 80px rgba(139,184,255,.25);
+      }
+      .chip{
+        border:1px dashed var(--chip-border);
+        color: var(--ink);
+      }
+    
+      /* Make all those Tailwind slate text utilities readable on dark bg */
+      .text-slate-500, .text-slate-600, .text-slate-700 { color: var(--muted) !important; }
+      .text-slate-400 { color: rgba(255,255,255,.7) !important; }
+      .text-slate-300 { color: rgba(255,255,255,.8) !important; }
+    
+      /* Inputs / textareas / buttons in dark mode */
+      input[type="text"], input[type="search"], input:not([type]), textarea {
+        background: rgba(255,255,255,.06);
+        color: var(--ink);
+        border: 1px solid rgba(255,255,255,.18);
+      }
+      input::placeholder, textarea::placeholder { color: rgba(255,255,255,.55); }
+      button.bg-slate-900{ background:#0b1226 !important; }
+      button.bg-slate-900:hover{ background:#0e1630 !important; }
+      .border-slate-200{ border-color: rgba(255,255,255,.18) !important; }
+    
+      /* Moon canvas rim */
+      #moonCanvas{ background:#0b1324; border:1px solid rgba(255,255,255,.15); }
+    
+    /* Word cloud container */
+    #cloud{
+      display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
+      gap:.45rem .6rem; padding:12px 8px; min-height:120px;
+    }
+    
+    /* Word chip */
+    #cloud .w{
+      display:inline-block; line-height:1;
+      padding:.18rem .42rem; border-radius:.65rem;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: inset 0 0 10px rgba(139,184,255,.10), 0 0 6px rgba(139,184,255,.08);
+      color: var(--ink);
+      /* subtle glow on hover */
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    #cloud .w:hover{
+      transform: translateY(-1px);
+      box-shadow: inset 0 0 14px rgba(139,184,255,.18), 0 0 10px rgba(139,184,255,.12);
+    }
+
+
+    /* Word-cloud stage */
+    #cloud{
+      position: relative;
+      height: 420px;                /* adjust if you want taller */
+      overflow: hidden;
+      border-radius: 1rem;
+      background:
+        radial-gradient(120% 90% at 70% 10%, rgba(164,122,244,.22), transparent 50%),
+        radial-gradient(100% 80% at 30% 80%, rgba(80,180,255,.18), transparent 55%),
+        radial-gradient(120% 100% at 50% 40%, rgba(255,160,220,.12), transparent 60%),
+        #081224;                    /* deep night */
+      box-shadow:
+        inset 0 0 80px rgba(139,184,255,.18),
+        inset 0 -60px 120px rgba(20,30,60,.55);
+    }
+    
+    /* Twinkling stars */
+    #cloud::before, #cloud::after{
+      content:"";
+      position:absolute; inset:0;
+      background-repeat: repeat;
+      pointer-events:none;
+    }
+    #cloud::before{                        /* small stars */
+      background-image: radial-gradient(2px 2px at 20px 40px,#fff,transparent),
+                        radial-gradient(1px 1px at 130px 90px,#bcd8ff,transparent),
+                        radial-gradient(1px 1px at 240px 20px,#fff,transparent),
+                        radial-gradient(2px 2px at 380px 140px,#e5f0ff,transparent);
+      opacity:.9; filter: blur(.2px);
+      animation: twinkle 8s linear infinite;
+    }
+    #cloud::after{                         /* faint star dust */
+      background-image: radial-gradient(1.2px 1.2px at 80px 160px,#fff,transparent),
+                        radial-gradient(1px 1px at 260px 220px,#d8ecff,transparent),
+                        radial-gradient(1.3px 1.3px at 420px 60px,#fff,transparent),
+                        radial-gradient(1px 1px at 560px 180px,#c6dbff,transparent);
+      opacity:.6; filter: blur(.3px);
+      animation: twinkle 10s linear infinite reverse;
+    }
+    @keyframes twinkle{
+      0%{opacity:.55} 50%{opacity:1} 100%{opacity:.55}
+    }
+    
+    /* Each word */
+    #cloud .wc{
+      position:absolute;
+      white-space:nowrap;
+      transform: translate(-50%, -50%);
+      text-shadow:
+        0 0 10px rgba(155,190,255,.25),
+        0 0 22px rgba(130,170,255,.18);
+      user-select:none;
+    }
+
+    
+      /* Header tweaks */
+      header .w-12.h-12{ background: radial-gradient(120% 120% at 20% 20%, #ffffff, #9fb6ff 45%, #4c5c9e 85%); }
+        
+        
+        /* Simple pages */
+        .page{ display:none; }
+        .page.active{ display:block; }
+        
+        /* Back button */
+        .back-btn{
+          display:inline-flex; align-items:center; gap:.5rem;
+          padding:.4rem .75rem; border-radius:9999px;
+          border:1px solid rgba(255,255,255,.2);
+          background:rgba(255,255,255,.06);
+        }
+        .back-btn:hover{ background:rgba(255,255,255,.1); }
+        
+        
+        .map-water   { fill:#0e1830; }                             /* slightly lighter water */
+        .map-land    { fill:rgba(255,255,255,.14); }               /* brighter land tint    */
+        .map-lines   { stroke:rgba(231,238,255,.28); stroke-width:.6; fill:none; }
+        .map-border  { stroke:rgba(231,238,255,.45); stroke-width:.8; fill:none; }
+        .map-country { stroke:rgba(231,238,255,.32); stroke-width:.45; fill:none; }
+        
+        /* region overlays a touch stronger */
+        .map-region       { fill-opacity:.18; stroke-width:.9; stroke:rgba(255,255,255,.30); 
+                            filter: drop-shadow(0 1px 6px rgba(139,184,255,.08)); }
+        .map-region:hover { fill-opacity:.34; }
+        .map-hit          { fill:transparent; cursor:pointer; }
+
+
+
+
+    </style>
+
+</head>
+<body class="min-h-screen">
+  <header class="p-6 md:p-10">
+    <div class="max-w-5xl mx-auto flex items-center gap-4">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-slate-200 to-white moon-glow"></div>
+      <div>
+        <h1 class="text-2xl md:text-3xl font-semibold">Moon Phase Life Compass</h1>
+        <p class="text-sm text-slate-500">v0.1 prototype — single file (HTML/CSS/JS). Local-first. Supabase-ready.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-6 md:p-10 grid gap-8">
+
+    <!-- ============== HOME (Main Menu) ============== -->
+    <section id="page-home" class="page active">
+    <!-- STATUS BAR -->
+    <section id="status" class="card rounded-2xl p-6 shadow">
+      <div class="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+        <div class="shrink-0 relative">
+          <div id="moonCanvas" class="w-28 h-28 rounded-full bg-slate-900 relative overflow-hidden"></div>
+          <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs text-slate-500">Today</div>
+        </div>
+        <div class="grid gap-2">
+          <div class="text-sm text-slate-500">
+            Date & time: <span id="todayStr"></span> • Timezone: <span id="tzStr"></span>
+          </div>
+    
+          <div class="text-xl font-semibold">
+            Current phase: <span id="phaseName">—</span>
+            <span class="text-slate-500 text-sm">(<span id="illumPct">—</span> illuminated)</span>
+          </div>
+    
+          <div class="text-sm text-slate-600">Monthly Stage: <span id="lifeStage" class="font-medium">—</span></div>
+          <div class="text-sm text-slate-600">Next phase: <span id="nextEvent">—</span></div>
+        </div>
+    
+        <div class="md:ml-auto">
+          <button class="chip rounded-xl px-3 py-2 text-sm" onclick="alert('Picker coming soon ✨')">
+            Change Indigenous Moon Tradition
+          </button>
+        </div>
+      </div>
+    </section>
+
+    
+      <!-- PHASE NAV CIRCLE -->
+      <section class="card rounded-2xl p-6 shadow">
+        <h2 class="text-lg font-semibold mb-4 text-center">Cycle Navigator</h2>
+        <div class="phase-ring">
+          <div class="dot" style="left:50%; top:6%;">
+            <button class="node" onclick="goPhase(1)">
+              <span class="pip"></span>
+              <div class="flex flex-col items-start">
+                <span class="text-xs uppercase tracking-wide opacity-80">Phase 1</span>
+                <span class="font-medium">Wait for Purpose</span>
+              </div>
+            </button>
+          </div>
+          <div class="dot" style="left:94%; top:50%;">
+            <button class="node" onclick="goPhase(2)">
+              <span class="pip"></span>
+              <div class="flex flex-col items-start">
+                <span class="text-xs uppercase tracking-wide opacity-80">Phase 2</span>
+                <span class="font-medium">Advance Purpose</span>
+              </div>
+            </button>
+          </div>
+          <div class="dot" style="left:50%; top:94%;">
+            <button class="node" onclick="goPhase(3)">
+              <span class="pip"></span>
+              <div class="flex flex-col items-start">
+                <span class="text-xs uppercase tracking-wide opacity-80">Phase 3</span>
+                <span class="font-medium">Give Thanks</span>
+              </div>
+            </button>
+          </div>
+          <div class="dot" style="left:6%; top:50%;">
+            <button class="node" onclick="goPhase(4)">
+              <span class="pip"></span>
+              <div class="flex flex-col items-start">
+                <span class="text-xs uppercase tracking-wide opacity-80">Phase 4</span>
+                <span class="font-medium">Recapitulate</span>
+              </div>
+            </button>
+          </div>
+        </div>
+        <p class="text-center text-slate-500 mt-4 text-sm">
+          Current phase is pinned to the north; tap a button to open that page.
+        </p>
+      </section>
+      
+        <!-- GLOBAL TRADITIONS MAP -->
+        <section class="card rounded-2xl p-6 shadow">
+          <h2 class="text-lg font-semibold mb-4 text-center">
+            Explore Global Indigenous Moon Traditions
+          </h2>
+        
+          <div class="text-center text-slate-500 text-sm mb-2">
+            Gall–Peters equal-area base • Regions are rough placeholders you can refine
+          </div>
+        
+          <div class="relative">
+            <svg id="worldMap" class="w-full" style="height: 420px;"></svg>
+        
+            <!-- Simple legend -->
+            <div class="absolute right-3 bottom-3 bg-black/25 backdrop-blur-sm
+                border border-white/15 rounded-xl p-3 text-xs">
+              <div class="font-semibold mb-1">Regions (9)</div>
+              <ul id="regionLegend" class="space-y-1"></ul>
+            </div>
+          </div>
+        </section>
+    </section>
+
+
+
+    <!-- ============== PHASE 1 PAGE ============== -->
+    <section id="page-phase-1" class="page">
+      <button class="back-btn mb-4" onclick="goHome()">← Back to Main Menu</button>
+    
+      <div class="phase-title mb-4">
+        <div class="kicker">Phase 1</div>
+        <div class="rule"></div>
+        <div class="big">Wait for Purpose</div>
+      </div>
+    
+      <section class="card rounded-2xl p-6 shadow" data-phase="1">
+            <h2 class="text-xl font-semibold">
+              Phase 1 — New Moon → Wait for Purpose
+              <span class="phase-badge" data-phase-badge="1" style="display:none">CURRENT</span>
+            </h2>
+    
+          <p class="text-sm text-slate-600">Quietly name what’s stirring. Your text never leaves this device unless you later enable cloud sync.</p>
+          <textarea id="journalInput" rows="5" placeholder="What purpose or direction is stirring?" class="mt-3 w-full p-3 rounded-xl border border-slate-200"></textarea>
+            <div class="flex items-center gap-3 mt-3">
+              <button class="bg-slate-900 text-white px-4 py-2 rounded-xl" onclick="submitEntry()">Submit Entry</button>
+              <button class="px-3 py-2 rounded-xl chip" onclick="refreshCurrentCycleUI()">Build Word Cloud</button>
+              <button class="px-3 py-2 rounded-xl chip" onclick="exportCurrentCycle()">Export Cycle</button>
+              <button class="px-3 py-2 rounded-xl chip" onclick="goHistory()">History</button>
+              <span id="journalSaved" class="text-sm text-slate-500"></span>
+            </div>
+            
+            <!-- entries feed -->
+            <div id="entryList" class="mt-4 space-y-2 max-h-64 overflow-auto"></div>
+            
+            <div id="cloud" class="cloud mt-4"></div>
+        </section>
+    </section>
+    
+    
+    <!-- ============== PHASE 2 PAGE ============== -->
+    <section id="page-phase-2" class="page">
+      <button class="back-btn mb-4" onclick="goHome()">← Back to Main Menu</button>
+    
+      <div class="phase-title mb-4">
+        <div class="kicker">Phase 2</div>
+        <div class="rule"></div>
+        <div class="big">Advance Purpose</div>
+      </div>
+    
+      <section class="card rounded-2xl p-6 shadow" data-phase="2">
+            <h2 class="text-xl font-semibold">
+              Phase 2 — Waxing → Advance Your Purpose
+              <span class="phase-badge" data-phase-badge="2" style="display:none">CURRENT</span>
+            </h2>
+    
+          <p class="text-sm text-slate-600">Backwards design: end goal → scaffolds → steps → checklist.</p>
+          <div class="grid md:grid-cols-3 gap-4 mt-3">
+            <div>
+              <label class="text-sm text-slate-500">End Goal (by Full Moon)</label>
+              <input id="goal" class="w-full p-3 rounded-xl border border-slate-200" placeholder="e.g., Submit PhD statement draft" />
+            </div>
+            <div>
+              <label class="text-sm text-slate-500">Scaffolds (supports)</label>
+              <textarea id="scaffolds" rows="3" class="w-full p-3 rounded-xl border border-slate-200" placeholder="People, resources, habits… one per line"></textarea>
+            </div>
+            <div>
+              <label class="text-sm text-slate-500">Steps (bite-sized)</label>
+              <textarea id="steps" rows="3" class="w-full p-3 rounded-xl border border-slate-200" placeholder="Action steps… one per line"></textarea>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 mt-3">
+            <button class="bg-slate-900 text-white px-4 py-2 rounded-xl" onclick="generateChecklist()">Make Checklist</button>
+            <button class="px-3 py-2 rounded-xl chip" onclick="clearPlan()">Clear</button>
+          </div>
+          <ul id="checklist" class="mt-4 space-y-2"></ul>
+          
+          <h2 class="text-xl font-semibold">Quick Tasks</h2>
+          <p class="text-sm text-slate-600">Add simple to-dos anytime. They live locally on this device.</p>
+          <div class="flex gap-2 mt-3">
+            <input id="qtInput" class="flex-1 p-3 rounded-xl border border-slate-200" placeholder="Add a task…" />
+            <button class="bg-slate-900 text-white px-4 py-2 rounded-xl" onclick="qtAdd()">Add</button>
+          </div>
+          <ul id="qtList" class="mt-3 space-y-2"></ul>
+          <div class="flex gap-2 mt-3">
+            <button class="px-4 py-2 rounded-xl chip" onclick="qtArchive()">Archive Compjecleted</button>
+            <button class="px-4 py-2 rounded-xl chip" onclick="qtClear()">Clear All</button>
+            <button class="px-4 py-2 rounded-xl chip" onclick="qtPushToPhase2()">Send to Phase 2</button>
+          </div>
+        </section>
+    </section>
+    
+    <!-- ============== PHASE 3 PAGE ============== -->
+    <section id="page-phase-3" class="page">
+      <button class="back-btn mb-4" onclick="goHome()">← Back to Main Menu</button>
+    
+      <div class="phase-title mb-4">
+        <div class="kicker">Phase 3</div>
+        <div class="rule"></div>
+        <div class="big">Give Thanks</div>
+      </div>
+    
+      <section class="card rounded-2xl p-6 shadow" data-phase="3">
+            <h2 class="text-xl font-semibold">
+              Phase 3 — Full Moon → Celebrate & Give Thanks
+              <span class="phase-badge" data-phase-badge="3" style="display:none">CURRENT</span>
+            </h2>
+    
+          <div class="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-emerald-50 border border-amber-200">
+            <p class="text-slate-700">This week is for gratitude, rest, and joy. Consider going screen‑free. If you check the app, it will simply remind you to go live your life.</p>
+            <button class="mt-3 px-4 py-2 rounded-xl chip" onclick="ackCelebrate()">I’ll step away 💛</button>
+            <span id="celebrateAck" class="text-sm text-slate-500 ml-2"></span>
+          </div>
+        </section>
+    </section>
+    
+    <!-- ============== PHASE 4 PAGE ============== -->
+    <section id="page-phase-4" class="page">
+      <button class="back-btn mb-4" onclick="goHome()">← Back to Main Menu</button>
+    
+      <div class="phase-title mb-4">
+        <div class="kicker">Phase 4</div>
+        <div class="rule"></div>
+        <div class="big">Recapitulate</div>
+      </div>
+    
+      <section class="card rounded-2xl p-6 shadow" data-phase="4">
+            <h2 class="text-xl font-semibold">
+              Phase 4 — Waning → Recapitulation & Loose Ends
+              <span class="phase-badge" data-phase-badge="4" style="display:none">CURRENT</span>
+            </h2>
+    
+          <p class="text-sm text-slate-600">Carry over anything unfinished from Phase 2 and capture new loose ends. Archive what no longer serves.</p>
+    
+          <div class="mt-3">
+            <h3 class="font-medium">Carry Over from Phase 2</h3>
+            <ul id="carryOver" class="mt-2 space-y-2"></ul>
+            <button class="mt-2 px-4 py-2 rounded-xl chip" onclick="carrySelected()">Add Selected to Next Cycle</button>
+          </div>
+    
+          <div class="mt-6">
+            <h3 class="font-medium">Loose End Tracker</h3>
+            <div class="flex gap-2 mt-2">
+              <input id="looseInput" class="flex-1 p-3 rounded-xl border border-slate-200" placeholder="Add a loose end (e.g., email Dr. G.)" />
+              <button class="bg-slate-900 text-white px-4 py-2 rounded-xl" onclick="addLoose()">Add</button>
+            </div>
+            <ul id="looseList" class="mt-3 space-y-2"></ul>
+            <div class="flex gap-2 mt-2">
+              <button class="px-4 py-2 rounded-xl chip" onclick="archiveLoose()">Archive Completed</button>
+              <button class="px-4 py-2 rounded-xl chip" onclick="clearLoose()">Clear All</button>
+            </div>
+          </div>
+        </section>
+    </section>
+
+    <section id="page-history" class="page">
+      <button class="back-btn mb-4" onclick="goHome()">← Back to Main Menu</button>
+      <h2 class="text-lg font-semibold mb-2">Journal History</h2>
+      <div id="historyList" class="grid gap-3"></div>
+    </section>
+
+    <section class="p-4 text-xs text-slate-500">
+      <p><strong>Privacy:</strong> All data is stored locally in your browser by default. When you turn on cloud sync later (Supabase + Google sign‑in), your entries will save securely to your private database.</p>
+    </section>
+  </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@4"></script>
+
+    <script>
+    // ========================
+    // STORAGE / UTIL
+    // ========================
+    const storeKey = 'mplc_v01';
+    function loadState(){ try{ return JSON.parse(localStorage.getItem(storeKey)) || {}; } catch{ return {}; } }
+    function saveState(s){ localStorage.setItem(storeKey, JSON.stringify(s)); }
+    let state = loadState();
+    
+    function fmtDate(d){
+      return d.toLocaleString([], {
+        year:'numeric', month:'short', day:'2-digit',
+        hour:'2-digit', minute:'2-digit'
+      });
+    }
+
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, ch => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'
+      }[ch]));
+    }
+    
+    
+    // ---- IndexedDB (local-first) ----
+    const DB_NAME='moon_journal_v1', DB_VERSION=1;
+    function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VERSION);
+      r.onupgradeneeded=()=>{const db=r.result;
+        if(!db.objectStoreNames.contains('settings')) db.createObjectStore('settings');
+        if(!db.objectStoreNames.contains('cycles'))   db.createObjectStore('cycles');
+        if(!db.objectStoreNames.contains('entries')){
+          const s=db.createObjectStore('entries',{keyPath:'id',autoIncrement:true});
+          s.createIndex('by_cycle','cycleId',{unique:false});
+          s.createIndex('by_month','monthKey',{unique:false});
+        }};
+      r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});}
+    async function idbGet(store,key){const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const s=tx.objectStore(store);const g=s.get(key);g.onsuccess=()=>res(g.result);g.onerror=()=>rej(g.error);});}
+    async function idbSet(store,key,val){const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');const s=tx.objectStore(store);const p=s.put(val,key);p.onsuccess=()=>res(true);p.onerror=()=>rej(p.error);});}
+    async function idbAdd(store,val){const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');const s=tx.objectStore(store);const a=s.add(val);a.onsuccess=()=>res(a.result);a.onerror=()=>rej(a.error);});}
+    async function idbIndexAll(store,idxName,query){const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const idx=tx.objectStore(store).index(idxName);const g=idx.getAll(query);g.onsuccess=()=>res(g.result||[]);g.onerror=()=>rej(g.error);});}
+
+    function monthKeyFromISO(iso){const d=new Date(iso);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}
+    
+    // For now: treat calendar month as the “cycle”
+    async function getOrCreateCurrentCycle(){
+      const now=new Date();
+      const id=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-cycle`;
+      const existing=await idbGet('cycles',id);
+      if (existing) return existing;
+      const cycle={id,start:new Date(now.getFullYear(),now.getMonth(),1).toISOString(),
+                   end:new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59).toISOString(),
+                   phaseName:'Waiting for Your Purpose'};
+      await idbSet('cycles',id,cycle);
+      return cycle;
+    }
+    
+    function goHistory(){ location.hash = '#/history'; }
+        
+    // ========================
+    // MOON MATH (fallback if SunCalc missing)
+    // ========================
+    function julianDay(date){ return date.getTime()/86400000 + 2440587.5; }
+    function moonPhase(date){
+      const jd = julianDay(date), newMoonRef = 2451550.1, synodic = 29.530588853;
+      let age = (jd - newMoonRef) % synodic; if (age < 0) age += synodic;
+      const illum = (1 - Math.cos(2*Math.PI*age/synodic))/2;
+      const deg = age/synodic*360;
+      let phaseName = (deg<1 || deg>=359) ? 'New Moon'
+        : deg<45 ? 'Waxing Crescent'
+        : deg<90 ? 'First Quarter'
+        : deg<135? 'Waxing Gibbous'
+        : deg<181? 'Full Moon'
+        : deg<225? 'Waning Gibbous'
+        : deg<270? 'Last Quarter'
+        : 'Waning Crescent';
+      const lifeStage = (deg>=45 && deg<180) ? 'Advance' : (deg>=175 && deg<=185) ? 'Celebrate' : (deg>185 && deg<360) ? 'Recap' : 'Wait';
+      const nextFull = (age<=synodic/2) ? (synodic/2-age) : (synodic-age+synodic/2);
+      const nextNew  = synodic - age;
+      const nextEvent = lifeStage==='Celebrate' ? `New Moon in ${nextNew.toFixed(1)} days` : `Full Moon in ${nextFull.toFixed(1)} days`;
+      return {illum, phaseName, lifeStage, nextEvent};
+    }
+    
+    function drawMoon(container, illum, waxing, phase01){
+      // illum: 0..1 (fraction illuminated)
+      // waxing: boolean
+      // phase01: 0=new, .25=first quarter, .5=full, .75=last quarter
+    
+      const w = container.clientWidth, h = container.clientHeight;
+      const r = Math.min(w,h)/2, cx=w/2, cy=h/2;
+    
+      // clear
+      container.innerHTML = '';
+      const NS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(NS,'svg');
+      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+      svg.setAttribute('class','watercolor rounded-full');
+      container.appendChild(svg);
+    
+      // base dark disk
+      const dark = document.createElementNS(NS,'circle');
+      dark.setAttribute('cx', cx); dark.setAttribute('cy', cy); dark.setAttribute('r', r);
+      dark.setAttribute('fill', '#0b1324');
+      svg.appendChild(dark);
+    
+      if (illum <= 0.001) return;                       // new moon → fully dark
+      if (illum >= 0.999){                               // full moon → simple white disk
+        const full = document.createElementNS(NS,'circle');
+        full.setAttribute('cx',cx); full.setAttribute('cy',cy); full.setAttribute('r',r*0.98);
+        full.setAttribute('fill','white'); full.setAttribute('opacity','0.96');
+        svg.appendChild(full); return;
+      }
+    
+      // Terminator geometry:
+      // Let cos(phi) = 1 - 2*illum  (phi = 2π * phase)
+      // The illuminated limb is drawn by two arcs: a circle arc (radius r) and
+      // an ellipse arc (rx = r * |cos(phi)|, ry = r). This produces the proper curved edge.
+      const c = Math.max(0, Math.min(1, Math.abs(1 - 2*illum))); // |cos(phi)| in [0..1]
+      const rx2 = r * c;                                         // second-arc x-radius
+    
+      // Which side is lit?
+      // For waxing, light is on the RIGHT in N-hemisphere convention; waning → LEFT.
+      // We control that by the sweep flag of the second arc.
+      const lightOnRight = waxing;
+    
+      // Build the lit shape path (two arcs, closed)
+      // Start at leftmost point of the disk
+      const largeArc = 1;             // we draw a full semicircle for the first arc
+      const sweepOuter = 1;           // left → right along the top
+      const sweepInner = lightOnRight ? 1 : 0;
+    
+      const d = [
+        `M ${cx - r},${cy}`,
+        // outer semicircle (circle arc)
+        `A ${r} ${r} 0 ${largeArc} ${sweepOuter} ${cx + r},${cy}`,
+        // inner ellipse arc back to start (controls the luminous curve)
+        `A ${rx2} ${r*0.98} 0 ${largeArc} ${sweepInner} ${cx - r},${cy}`,
+        'Z'
+      ].join(' ');
+    
+      // Clip the lit shape to the moon disk (belt-and-suspenders)
+      const defs = document.createElementNS(NS,'defs');
+      const clip = document.createElementNS(NS,'clipPath'); clip.setAttribute('id','moonClip');
+      const disk = document.createElementNS(NS,'circle');
+      disk.setAttribute('cx',cx); disk.setAttribute('cy',cy); disk.setAttribute('r',r*0.99);
+      clip.appendChild(disk); defs.appendChild(clip); svg.appendChild(defs);
+    
+      // Draw lit region
+      const lit = document.createElementNS(NS,'path');
+      lit.setAttribute('d', d);
+      lit.setAttribute('fill', 'white');
+      lit.setAttribute('clip-path', 'url(#moonClip)');
+      lit.setAttribute('opacity', '0.96');
+      const shade = document.createElementNS(NS,'radialGradient');
+        shade.setAttribute('id','moonShade');
+        shade.innerHTML = `
+          <stop offset="60%" stop-color="rgba(0,0,0,0)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0.35)"/>
+        `;
+        defs.appendChild(shade);
+        dark.setAttribute('fill','url(#moonShade)');
+      svg.appendChild(lit);
+    
+      // Gentle limb glow
+      const glow = document.createElementNS(NS,'circle');
+      glow.setAttribute('cx',cx); glow.setAttribute('cy',cy); glow.setAttribute('r',r*0.985);
+      glow.setAttribute('fill','none');
+      glow.setAttribute('stroke','rgba(255,255,255,.18)');
+      glow.setAttribute('stroke-width','1.4');
+      svg.appendChild(glow);
+    }
+
+
+    let mapInit = false;
+    function ensureMap() {
+      if (mapInit) return;
+      const el = document.querySelector('#page-home #worldMap');
+      if (el) { renderWorldMap(); mapInit = true; }
+    }
+
+    // ========================
+    // JOURNAL + WORD CLOUD
+    // ========================
+    function saveJournal(){
+      state.journal = document.getElementById('journalInput').value || '';
+      state.journalSavedAt = Date.now(); saveState(state);
+      const el = document.getElementById('journalSaved');
+      if (el){ el.textContent = 'Saved.'; setTimeout(()=>el.textContent='',1500); }
+    }
+    
+    function buildWordCloud(targetTotal = 230){
+      const text = (document.getElementById('journalInput').value || '').toLowerCase();
+    
+      const stop = new Set([
+        'the','and','a','an','to','of','in','for','on','with','it','is','that','this',
+        'i','you','my','me','we','our','your','at','as','be','are','was','were','but',
+        'so','if','or','by','from','about','into','than','then','there','here','not',
+        'just','very','really','also','too','can','will','would','could','should'
+      ]);
+    
+      const words = text.replace(/[^a-z0-9\s']/g,' ')
+        .split(/\s+/)
+        .map(w=>w.replace(/^'+|'+$/g,''))
+        .filter(w => w && w.length>2 && !stop.has(w));
+    
+      const cloud = document.getElementById('cloud');
+      cloud.innerHTML = '';
+    
+      if (!words.length){
+        cloud.innerHTML = '<div class="text-slate-400 text-sm absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">Type a little more, then tap “Build Word Cloud”.</div>';
+        return;
+      }
+    
+      // ---- freq + tie-shuffle ----
+      const freq = {};
+      for (const w of words) freq[w] = (freq[w]||0)+1;
+    
+      let entries = Object.entries(freq);
+      const buckets = new Map();
+      for (const e of entries){
+        const c = e[1];
+        (buckets.get(c) || buckets.set(c,[]).get(c)).push(e);
+      }
+      for (const g of buckets.values()){
+        for (let i=g.length-1;i>0;i--){
+          const j = Math.floor(Math.random()*(i+1));
+          [g[i],g[j]] = [g[j],g[i]];
+        }
+      }
+      entries = [...buckets.keys()].sort((a,b)=>b-a).flatMap(k => buckets.get(k));
+      entries = entries.slice(0, targetTotal);
+    
+      // ---- tiers (10 × 23) & sizes (smaller tail) ----
+      const tierSize = 23, maxTiers = 10;
+      const tiers = [];
+      for (let t=0; t<maxTiers; t++){
+        const a = t*tierSize, b = a + tierSize;
+        const slice = entries.slice(a, b);
+        if (!slice.length) break;
+        tiers.push(slice);
+      }
+      const sizes = [60,46,36,30,26,22,18,14,12,9]; // px
+      const minTiny = 8;                             // absolute minimum
+    
+      // ---- stage + helpers ----
+      const W = cloud.clientWidth || 680, H = cloud.clientHeight || 420;
+      const cx = W/2, cy = H/2;
+      const placed = []; // list of bounding boxes
+    
+      const palette = [
+        [265,72,88],[210,70,88],[305,70,86],[185,55,86],
+        [230,75,88],[280,68,86],[195,58,88]
+      ];
+      const golden = Math.PI * (3 - Math.sqrt(5));
+      const pad = 6;                 // collision padding around each word
+      const inflate = 1.08;          // widen bbox a tad to account for tiny rotation
+    
+      function colorFor(i){
+        const [h,s,l] = palette[i % palette.length];
+        return `hsl(${h} ${s}% ${l}%)`;
+      }
+      function overlaps(box){
+        for (const q of placed){
+          if (box.x1 < q.x2 && box.x2 > q.x1 && box.y1 < q.y2 && box.y2 > q.y1) return true;
+        }
+        return false;
+      }
+    
+      let gid = 0; // global index for color variety
+    
+      tiers.forEach((tier, ti)=>{
+        const baseSize = sizes[ti] || sizes[sizes.length-1];
+        const tierBias = (ti/(sizes.length-1));
+        const baseR = Math.min(W,H) * (0.06 + tierBias * 0.42);
+    
+        tier.forEach(([w], k)=>{
+          let fs = baseSize;
+          let placedOk = false, triesTotal = 0;
+    
+          // Shrink-and-retry loop if it can't fit
+          while (!placedOk && fs >= minTiny){
+            const span = document.createElement('span');
+            span.className = 'wc';
+            span.textContent = w;
+            span.style.fontSize = fs + 'px';
+            span.style.color = colorFor(gid++);
+            span.style.textShadow =
+              `0 0 ${Math.round(fs/3)}px rgba(180,210,255,.28),
+               0 0 ${Math.round(fs/1.6)}px rgba(150,180,255,.18)`;
+            cloud.appendChild(span);
+    
+            // Measure
+            const wpx = span.offsetWidth * inflate;
+            const hpx = span.offsetHeight * inflate;
+    
+            // Spiral search
+            let a = (k + ti*17) * golden;
+            let r = baseR;
+            let x=0, y=0, tries=0;
+            const maxTries = 380; // more patience
+    
+            while(tries < maxTries){
+              x = cx + Math.cos(a)*r;
+              y = cy + Math.sin(a)*r;
+              const box = {
+                x1: x - wpx/2 - pad,
+                y1: y - hpx/2 - pad,
+                x2: x + wpx/2 + pad,
+                y2: y + hpx/2 + pad
+              };
+              const inBounds = (box.x1>4 && box.y1>4 && box.x2<W-4 && box.y2<H-4);
+    
+              if (inBounds && !overlaps(box)){
+                // place
+                placed.push(box);
+                const rot = (Math.random()*6 - 3);
+                span.style.left = x + 'px';
+                span.style.top  = y + 'px';
+                span.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
+                placedOk = true;
+                break;
+              }
+              // advance
+              a += golden;
+              r += 8 + ti*1.6; // slightly bigger outward step than before
+              tries++; triesTotal++;
+            }
+    
+            if (!placedOk){
+              // remove & shrink for another attempt
+              cloud.removeChild(span);
+              fs -= (fs > 20 ? 4 : 2); // shrink faster when big, gently when small
+            }
+          }
+          // If it never fit, we just skip it—no overlap introduced.
+        });
+      });
+    }
+
+    // AUTOSAVE draft so nothing gets lost
+    let autosaveTimer=null;
+    async function loadDraft(){
+      const s=(await idbGet('settings','app'))||{};
+      if (s.autosaveDraft) document.getElementById('journalInput').value = s.autosaveDraft;
+      const saveDraft=async()=>{
+        const val=document.getElementById('journalInput').value;
+        const cur=(await idbGet('settings','app'))||{};
+        cur.autosaveDraft=val; await idbSet('settings','app',cur);
+      };
+      ['input','blur'].forEach(ev=>{
+        document.getElementById('journalInput').addEventListener(ev, ()=>{
+          clearTimeout(autosaveTimer); autosaveTimer=setTimeout(saveDraft, 800);
+        });
+      });
+      document.addEventListener('visibilitychange', ()=>{ if (document.hidden) saveDraft(); });
+    }
+    
+    async function submitEntry(){
+      const ta=document.getElementById('journalInput');
+      const text=(ta.value||'').trim();
+      if(!text) return;
+      const cycle=await getOrCreateCurrentCycle();
+      const createdAtISO=new Date().toISOString();
+      await idbAdd('entries',{
+        cycleId:cycle.id, createdAtISO, text,
+        wordCount:text.split(/\s+/).length, charCount:text.length,
+        monthKey:monthKeyFromISO(createdAtISO)
+      });
+      // clear draft + textarea
+      const s=(await idbGet('settings','app'))||{}; s.autosaveDraft=null; await idbSet('settings','app',s);
+      ta.value=''; saveJournal();
+      await refreshCurrentCycleUI();
+    }
+    
+    // Build feed + make cloud from ALL entries in the current cycle
+    async function refreshCurrentCycleUI(){
+      const cycle=await getOrCreateCurrentCycle();
+      const entries=(await idbIndexAll('entries','by_cycle', cycle.id))
+        .sort((a,b)=> new Date(a.createdAtISO)-new Date(b.createdAtISO));
+    
+      // list UI
+      const list=document.getElementById('entryList'); if (list){ list.innerHTML='';
+        entries.forEach(e=>{
+          const card=document.createElement('div');
+          card.className='rounded-xl border border-white/15 bg-white/5 p-3';
+          const when=new Date(e.createdAtISO).toLocaleString();
+          const p=document.createElement('p'); const full=e.text;
+          const preview = full.length>200 ? full.slice(0,200)+'…' : full;
+          p.textContent=preview;
+          const btn=document.createElement('button');
+          btn.className='underline text-xs opacity-80 mt-1';
+          btn.textContent='Expand';
+          btn.onclick=()=>{ const open = (p.textContent===full); p.textContent=open?preview:full; btn.textContent=open?'Expand':'Collapse'; };
+          card.innerHTML=`<div class="text-[11px] opacity-60 mb-1">${when}</div>`;
+          card.appendChild(p); card.appendChild(btn); list.appendChild(card);
+        });
+      }
+    
+      // cloud from ALL entries (reuse your existing builder)
+      const textAll = entries.map(e=>e.text).join(' ');
+      buildWordCloudFromText(textAll, 230);
+    }
+
+    async function buildHistory(){
+      const db=await openDB();
+      const months = await new Promise((res,rej)=>{
+        const tx=db.transaction('entries','readonly');
+        const s=tx.objectStore('entries'); const g=s.getAll();
+        g.onsuccess=()=>{const m=new Map();
+          (g.result||[]).forEach(e=>{
+            const key=e.monthKey||monthKeyFromISO(e.createdAtISO);
+            if(!m.has(key)) m.set(key,[]);
+            m.get(key).push(e);
+          });
+          res([...m.entries()].sort((a,b)=> a[0]<b[0]?1:-1)); // newest first
+        }; g.onerror=()=>rej(g.error);
+      });
+    
+      const wrap=document.getElementById('historyList'); if(!wrap) return;
+      wrap.innerHTML='';
+      months.forEach(([key,entries])=>{
+        const sec=document.createElement('div');
+        sec.className='rounded-xl border border-white/15 bg-white/5';
+        const title = new Date(key+'-01').toLocaleDateString(undefined,{year:'numeric',month:'long'});
+        sec.innerHTML = `
+          <div class="flex items-center justify-between p-3">
+            <div class="font-medium">${title}</div>
+            <div class="flex gap-2">
+              <button class="chip px-2 py-1 rounded-lg" onclick="exportMonth('${key}')">Export</button>
+              <button class="chip px-2 py-1 rounded-lg" onclick="this.nextElementSibling.classList.toggle('hidden')">Toggle</button>
+            </div>
+          </div>
+          <div class="p-3 hidden"></div>`;
+        const body=sec.lastElementChild;
+        entries.sort((a,b)=>new Date(a.createdAtISO)-new Date(b.createdAtISO))
+          .forEach(e=>{
+            const p=document.createElement('div');
+            p.className='text-sm opacity-90 mb-2';
+            p.innerHTML=`<div class="opacity-60 text-[11px]">${new Date(e.createdAtISO).toLocaleString()}</div>
+                         <div>${(e.text.length>300? e.text.slice(0,300)+'…' : e.text)
+                           .replace(/[&<>]/g,s=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[s]))}</div>`;
+            body.appendChild(p);
+          });
+        wrap.appendChild(sec);
+      });
+    }
+    
+    async function exportMonth(monthKey){
+      const db=await openDB();
+      const all=await new Promise((res,rej)=>{const tx=db.transaction('entries','readonly');
+        const idx=tx.objectStore('entries').index('by_month'); const g=idx.getAll(monthKey);
+        g.onsuccess=()=>res(g.result||[]); g.onerror=()=>rej(g.error);});
+      const blob=new Blob([JSON.stringify({monthKey,entries:all},null,2)],{type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download=`moon-journal-${monthKey}.json`; a.click(); URL.revokeObjectURL(a.href);
+    }
+    
+    async function exportCurrentCycle(){
+      const cycle=await getOrCreateCurrentCycle();
+      const entries=await idbIndexAll('entries','by_cycle',cycle.id);
+      const blob=new Blob([JSON.stringify({cycle,entries},null,2)],{type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download=`moon-cycle-${cycle.id}.json`; a.click(); URL.revokeObjectURL(a.href);
+    }
+    
+    // Temporary input swap to reuse your buildWordCloud()
+    function buildWordCloudFromText(allText, total){
+      const ta = document.getElementById('journalInput');
+      if (!ta) return;
+      const orig = ta.value;
+      ta.value = allText;
+      buildWordCloud(total);
+      ta.value = orig;
+    }
+    
+    
+    // ========================
+    // PHASE 2 PLAN / CHECKLIST
+    // ========================
+    function generateChecklist(){
+      const goal = document.getElementById('goal').value.trim();
+      const scaff = (document.getElementById('scaffolds').value||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
+      const steps = (document.getElementById('steps').value||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
+      state.plan = { goal, scaff, steps, checklist: steps.map(s=>({text:s, done:false})) };
+      saveState(state); renderChecklist(); renderCarryOver();
+    }
+    function clearPlan(){ delete state.plan; saveState(state); renderChecklist(); renderCarryOver(); }
+    function toggleCheck(i){ state.plan.checklist[i].done = !state.plan.checklist[i].done; saveState(state); renderChecklist(); renderCarryOver(); }
+    function renderChecklist(){
+      const ul = document.getElementById('checklist'); ul.innerHTML='';
+      if(!state.plan){ ul.innerHTML = '<li class="text-slate-500 text-sm">No checklist yet.</li>'; return; }
+      if(state.plan.goal){ ul.insertAdjacentHTML('beforeend', `<li class="text-slate-600">Goal: <strong>${escapeHtml(state.plan.goal)}</strong></li>`); }
+      state.plan.checklist.forEach((item,i)=>{
+        const li = document.createElement('li'); li.className='flex items-center gap-3';
+        li.innerHTML = `<input type="checkbox" ${item.done?'checked':''} onchange="toggleCheck(${i})" /> <span ${item.done?'class="line-through text-slate-400"':''}>${escapeHtml(item.text)}</span>`;
+        ul.appendChild(li);
+      });
+    }
+    
+    // ========================
+    // PHASE 4 CARRY-OVER + LOOSE ENDS
+    // ========================
+    function renderCarryOver(){
+      const ul = document.getElementById('carryOver'); ul.innerHTML='';
+      if(!state.plan){ ul.innerHTML = '<li class="text-slate-500 text-sm">No Phase 2 plan found.</li>'; return; }
+      const pending = state.plan.checklist.map((c,i)=>({i,...c})).filter(c=>!c.done);
+      if(!pending.length){ ul.innerHTML = '<li class="text-slate-500 text-sm">Nothing to carry over — you finished everything. ✨</li>'; return; }
+      pending.forEach(p=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<label class="flex items-center gap-2"><input type="checkbox" data-carry-index="${p.i}"/> <span>${escapeHtml(p.text)}</span></label>`;
+        ul.appendChild(li);
+      });
+    }
+    function carrySelected(){
+      const boxes = [...document.querySelectorAll('[data-carry-index]')].filter(b=>b.checked);
+      if(!boxes.length) return;
+      state.nextCycle = state.nextCycle || { checklist: [], loose: [] };
+      boxes.forEach(b=>{
+        const i = +b.getAttribute('data-carry-index');
+        const item = state.plan.checklist[i];
+        state.nextCycle.checklist.push({text:item.text, done:false, from:'phase2'});
+      });
+      saveState(state);
+      alert('Added to next cycle.');
+    }
+    // Loose ends
+    function addLoose(){
+      const v = document.getElementById('looseInput').value.trim(); if(!v) return;
+      state.loose = state.loose || []; state.loose.push({text:v, done:false});
+      document.getElementById('looseInput').value=''; saveState(state); renderLoose();
+    }
+    function toggleLoose(i){ state.loose[i].done = !state.loose[i].done; saveState(state); renderLoose(); }
+    function archiveLoose(){ if(!state.loose) return; state.loose = state.loose.filter(x=>!x.done); saveState(state); renderLoose(); }
+    function clearLoose(){ delete state.loose; saveState(state); renderLoose(); }
+    function renderLoose(){
+      const ul = document.getElementById('looseList'); ul.innerHTML='';
+      const items = state.loose||[];
+      if(!items.length){ ul.innerHTML = '<li class="text-slate-500 text-sm">No loose ends captured yet.</li>'; return; }
+      items.forEach((it,i)=>{
+        const li = document.createElement('li'); li.className='flex items-center gap-3';
+        li.innerHTML = `<input type="checkbox" ${it.done?'checked':''} onchange="toggleLoose(${i})" /> <span ${it.done?'class="line-through text-slate-400"':''}>${escapeHtml(it.text)}</span>`;
+        ul.appendChild(li);
+      });
+    }
+    
+    // ========================
+    // CELEBRATE & PROFILE
+    // ========================
+    function ackCelebrate(){ state.celebrateAck = Date.now(); saveState(state); const el=document.getElementById('celebrateAck'); if(el) el.textContent='Have a beautiful week.'; }
+    function setSeasonalProfile(mode){ state.profile = mode; saveState(state); alert('Seasonal profile set to: '+mode.toUpperCase()); }
+    function toggleTheme(){ document.documentElement.classList.toggle('dark'); }
+    
+    // ========================
+    // QUICK TASKS
+    // ========================
+    function qtState(){ state.qt = state.qt || []; return state.qt; }
+    function qtSave(){ saveState(state); qtRender(); }
+    function qtAdd(){
+      const el = document.getElementById('qtInput'); const v = el.value.trim(); if(!v) return;
+      qtState().push({text:v, done:false}); el.value=''; qtSave();
+    }
+    function qtToggle(i){ qtState()[i].done = !qtState()[i].done; qtSave(); }
+    function qtArchive(){ state.qt = qtState().filter(x=>!x.done); qtSave(); }
+    function qtClear(){ delete state.qt; qtSave(); }
+    function qtRender(){
+      const ul = document.getElementById('qtList'); if(!ul) return;
+      ul.innerHTML=''; const items = qtState();
+      if(!items.length){ ul.innerHTML = '<li class="text-slate-500 text-sm">No tasks yet.</li>'; return; }
+      items.forEach((it,i)=>{
+        const li = document.createElement('li'); li.className='flex items-center gap-3';
+        li.innerHTML = `<input type="checkbox" ${it.done?'checked':''} onchange="qtToggle(${i})" />
+                        <span ${it.done?'class="line-through text-slate-400"':''}>${escapeHtml(it.text)}</span>`;
+        ul.appendChild(li);
+      });
+    }
+    function qtPushToPhase2(){
+      const items = qtState().filter(x=>x.done === false);
+      if(!items.length){ alert('Nothing to send.'); return; }
+      state.plan = state.plan || { goal:'', scaff:[], steps:[], checklist:[] };
+      items.forEach(x=> state.plan.checklist.push({text:x.text, done:false, from:'quick'}));
+      saveState(state); renderChecklist(); renderCarryOver();
+      alert('Sent to Phase 2 checklist.');
+    }
+    
+    // Helper: days until the next quarter boundary (New -> 0, First -> .25, Full -> .5, Last -> .75)
+    function daysUntilNextQuarter(phase0to1){
+      const syn = 29.530588853;
+      const quarters = [0, 0.25, 0.5, 0.75, 1];
+      const now = phase0to1 % 1;
+      const next = quarters.find(q => q > now) ?? 1;
+      return (next - now) * syn;
+    }
+    
+    // --- Simple router ---
+    function showPage(id){
+      document.querySelectorAll('.page').forEach(p=>{
+        p.classList.toggle('active', p.id === id);
+      });
+    }
+    
+    function defaultPhaseNumber(){
+      try{
+        const now = new Date();
+        if (window.SunCalc){
+          const m = SunCalc.getMoonIllumination(now);
+          const deg = m.phase * 360;
+          const lifeStage = (deg>=45&&deg<180)?'Advance'
+            : (deg>=175&&deg<=185)?'Celebrate'
+            : (deg>185&&deg<360)?'Recap' : 'Wait';
+          return autoPhaseFromLifeStage(lifeStage);
+        } else {
+          return autoPhaseFromLifeStage(moonPhase(now).lifeStage);
+        }
+      } catch(e){ return 1; }
+    }
+    
+    function route(){
+      const m = (location.hash||'').match(/^#\/phase\/([1-4])$/);
+      if (m){
+        const n = parseInt(m[1],10);
+        state.activePhase = n; saveState(state);
+        rotateRingForPhase(n);
+        markCurrent(n);
+        showPage('page-phase-' + n);
+      } else if ((location.hash||'') === '#/history'){
+        showPage('page-history');
+        buildHistory();
+      } else {
+        const n = state.activePhase || defaultPhaseNumber();
+        rotateRingForPhase(n);
+        markCurrent(n);
+        showPage('page-home');
+        ensureMap();
+      }
+    }
+
+    function goHome(){ location.hash = '#/home'; }
+    function goPhase(n){ location.hash = '#/phase/' + n; }
+
+    
+    // Returns a Date for the next quarter boundary based on current phase (0..1)
+    function nextQuarterDate(phase0to1, now=new Date()){
+      const syn = 29.530588853; // days
+      const quarters = [0, 0.25, 0.5, 0.75, 1];
+      const cur = phase0to1 % 1;
+      const next = quarters.find(q => q > cur) ?? 1;
+      const deltaDays = (next - cur) * syn;
+      return new Date(now.getTime() + deltaDays * 86400000);
+    }
+
+
+    // ========================
+    // RENDER STATUS (SunCalc if present)
+    // ========================
+    function renderStatus(){
+      const now = new Date();
+      let illum, phaseName, lifeStage, nextEvent, waxing, phase01;
+    
+      if (window.SunCalc){
+        const m = SunCalc.getMoonIllumination(now);    // m.fraction (0..1), m.phase (0..1)
+        phase01 = m.phase; // 0=new, .25=first quarter, .5=full, .75=last quarter
+        illum = m.fraction;
+        const deg = m.phase * 360;
+    
+        // NEW: waxing/waning flag from SunCalc (0..0.5 = waxing, 0.5..1 = waning)
+        waxing = (m.phase < 0.5);
+    
+        // Labels
+        phaseName = (deg<1||deg>=359)?'New Moon'
+          : deg<45?'Waxing Crescent'
+          : deg<90?'First Quarter'
+          : deg<135?'Waxing Gibbous'
+          : deg<181?'Full Moon'
+          : deg<225?'Waning Gibbous'
+          : deg<270?'Last Quarter'
+          : 'Waning Crescent';
+    
+        lifeStage = (deg>=45&&deg<180)?'Advance'
+          : (deg>=175&&deg<=185)?'Celebrate'
+          : (deg>185&&deg<360)?'Recap'
+          : 'Wait';
+    
+        const days = daysUntilNextQuarter(m.phase);
+        const when = nextQuarterDate(m.phase, now);
+        nextEvent = `${fmtDate(when)}  (in ${days.toFixed(1)} days)`;
+
+    
+      } 
+    else {
+      const info = moonPhase(now);
+      ({ illum, phaseName, lifeStage } = info);
+    
+      // crude phase estimate if SunCalc isn't available
+      phase01 = illum;                       // symmetric base
+      if (lifeStage === 'Recap') phase01 = 1 - illum;  // flip on waning side
+    
+      // (your existing nextEvent code continues…)
+      let approxPhase = phase01;
+      const days = daysUntilNextQuarter(approxPhase);
+      const when = nextQuarterDate(approxPhase, now);
+      nextEvent = `${fmtDate(when)}  (in ${days.toFixed(1)} days)`;
+    
+      waxing = (lifeStage === 'Wait' || lifeStage === 'Advance' || lifeStage === 'Celebrate');
+    }
+
+    
+      // Paint UI
+      document.getElementById('todayStr').textContent = fmtDate(now);
+      document.getElementById('tzStr').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local time';
+      document.getElementById('phaseName').textContent = phaseName;
+      document.getElementById('illumPct').textContent = Math.round(illum*100)+'%';
+      document.getElementById('lifeStage').textContent = lifeStage;
+      document.getElementById('nextEvent').textContent = nextEvent;
+    
+      // NEW: pass waxing as the 3rd arg
+      drawMoon(document.getElementById('moonCanvas'), illum, waxing, phase01);
+    }
+
+    
+    // ========================
+    // HYDRATE + LISTENERS (after DOM ready)
+    // ========================
+    function hydrate(){
+      // restore inputs/UI
+      const j = document.getElementById('journalInput');
+      if (j) j.value = state.journal||'';
+      renderChecklist(); renderCarryOver(); renderLoose(); qtRender();
+    
+      if (state.journalSavedAt){
+        const el = document.getElementById('journalSaved');
+        if (el) el.textContent = 'Last saved ' + new Date(state.journalSavedAt).toLocaleString();
+      }
+      if (j){
+        let t;
+        j.addEventListener('input', ()=>{ clearTimeout(t); t = setTimeout(()=>saveJournal(), 600); });
+      }
+    }
+
+    
+    //Phase planner
+    function showPhase(n){
+      // Hide all tagged sections except chosen
+      document.querySelectorAll('[data-phase]').forEach(sec=>{
+        if (Number(sec.getAttribute('data-phase')) === n) {
+          sec.classList.remove('hidden');
+        } else {
+          sec.classList.add('hidden');
+        }
+      });
+      // Remember choice
+      state.activePhase = n; saveState(state);
+    }
+    
+    function autoPhaseFromLifeStage(lifeStage){
+      // Map your life stages → 1..4
+      if (lifeStage === 'Wait') return 1;
+      if (lifeStage === 'Advance') return 2;
+      if (lifeStage === 'Celebrate') return 3;
+      if (lifeStage === 'Recap') return 4;
+      return 1;
+    }
+
+
+    // Map life stage -> phase number (we already used this idea)
+    function autoPhaseFromLifeStage(lifeStage){
+      if (lifeStage === 'Wait') return 1;
+      if (lifeStage === 'Advance') return 2;
+      if (lifeStage === 'Celebrate') return 3;
+      if (lifeStage === 'Recap') return 4;
+      return 1;
+    }
+    
+    // Rotate the ring so the selected phase is at the top
+    function rotateRingForPhase(n){
+      // Positions are at top/right/bottom/left; rotate so selected comes to "north".
+      // Phase 1 -> 0deg, 2 -> -90deg, 3 -> -180deg, 4 -> -270deg
+      const angle = -(n-1) * 90;
+      document.documentElement.style.setProperty('--ring-rot', angle + 'deg');
+    }
+    
+    // Visually mark which section is current (no hiding)
+    function markCurrent(n){
+      // Add glow to the matching section
+      document.querySelectorAll('[data-phase]').forEach(sec=>{
+        sec.classList.toggle('is-current', Number(sec.getAttribute('data-phase')) === n);
+      });
+      // Show only the matching badge; hide others
+      document.querySelectorAll('[data-phase-badge]').forEach(b=>{
+        const isMatch = Number(b.getAttribute('data-phase-badge')) === n;
+        b.style.display = isMatch ? 'inline-block' : 'none';
+      });
+    }
+    
+    // Set phase from user action or URL hash
+    function setPhase(n){
+      rotateRingForPhase(n);
+      markCurrent(n);
+      state.activePhase = n;
+      saveState(state);
+      // No hash push here — the router controls the hash
+    }
+
+    
+    // Read URL hash (#phase=1..4)
+    function phaseFromHash(){
+      const m = (location.hash || '').match(/phase=(\d)/);
+      const n = m ? parseInt(m[1], 10) : NaN;
+      return (n>=1 && n<=4) ? n : null;
+    }
+
+    // ---- World map (Gall–Peters) ----
+    async function renderWorldMap(){
+      const svg = d3.select("#worldMap");
+      if (svg.empty()) return;
+    
+      const w = svg.node().clientWidth || 800;
+      const h = parseInt(svg.style("height")) || 420;
+      svg.attr("viewBox", `0 0 ${w} ${h}`);
+    
+      // Projection
+      let projection;
+      if (d3.geoCylindricalEqualArea) {
+        projection = d3.geoCylindricalEqualArea().parallel(Math.PI / 4);
+      } else {
+        projection = d3.geoEqualEarth();
+      }
+      projection.translate([w/2, h/2]).scale(Math.min(w, h) * 0.47);
+      const path = d3.geoPath(projection);
+    
+      // >>> ADD CLIP PATH RIGHT HERE <<<
+      svg.append("defs").append("clipPath")
+        .attr("id", "clipSphere")
+        .append("path")
+        .datum({type: "Sphere"})
+        .attr("d", path);
+    
+      // Base layers
+      svg.append("rect").attr("width", w).attr("height", h).attr("class", "map-water");
+      const g = svg.append("g");
+    
+      // Graticule
+      const graticule = d3.geoGraticule();
+      g.append("path").attr("d", path(graticule())).attr("class","map-lines");
+      g.append("path").attr("d", path(d3.geoGraticule().outline())).attr("class","map-border");
+    
+      // Land + countries
+      const landTopo = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json").then(r=>r.json());
+      const land = topojson.feature(landTopo, landTopo.objects.land);
+      g.append("path").attr("d", path(land)).attr("class","map-land");
+    
+      const cTopo = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r=>r.json());
+      const countries = topojson.mesh(cTopo, cTopo.objects.countries, (a,b)=>a!==b);
+      g.append("path").attr("d", path(countries)).attr("class","map-country");
+    
+      // Regions (clipped so they don't spill outside)
+      const regionGroup = g.append("g").attr("clip-path", "url(#clipSphere)");
+    
+      const regions = [
+        { id:1,  name:"North America",                         box:[-170,-50, 10, 75] },
+        { id:2,  name:"Mesoamerica & Caribbean",               box:[-105,-60, -5, 25] },
+        { id:3,  name:"South America",                         box:[-82,-35, -56, 13] },
+        { id:4,  name:"Oceania & Nearby (W)",                  box:[110,180, -25, 20] },
+        { id:4.1,name:"Oceania & Nearby (E)",                  box:[-180,-140, -25, 15] },
+        { id:5,  name:"Asia – Temperate / Steppe / Highland",  box:[ 40,140,   5, 60] },
+        { id:6,  name:"Asia – Monsoon / Maritime",             box:[ 65,145, -10, 35] },
+        { id:7,  name:"Africa – Sub-Saharan",                  box:[-20, 52, -35, 15] },
+        { id:8,  name:"North Africa & Middle East",            box:[-17, 60,  15, 40] },
+        { id:9,  name:"Europe (Pre-Roman / Pre-Christian)",    box:[-12, 60,  35, 72] },
+      ];
+      const colors = ["#8BB8FF","#9FE0D4","#F7C07B","#E59BCC","#9AD07A","#F18F8B","#C7B7FF","#FFD08A","#8BC6C6"];
+    
+      function boxPoly([wmin, wmax, smin, smax]){
+        const p = [[wmin,smin],[wmax,smin],[wmax,smax],[wmin,smax],[wmin,smin]];
+        return { type:"Feature", geometry:{ type:"Polygon", coordinates:[p] } };
+      }
+    
+      regions.forEach((r,i)=>{
+        const feat = boxPoly(r.box);
+        regionGroup.append("path")
+          .attr("d", path(feat))
+          .attr("class","map-region")
+          .attr("fill", colors[i % colors.length])
+          .attr("data-name", r.name);
+    
+        regionGroup.append("path")
+          .attr("d", path(feat))
+          .attr("class","map-hit")
+          .on("mouseenter", function(){
+            d3.select(this.previousSibling).attr("fill-opacity", .28);
+            showLegendHighlight(r.name);
+          })
+          .on("mouseleave", function(){
+            d3.select(this.previousSibling).attr("fill-opacity", .14);
+            showLegendHighlight(null);
+          })
+          .on("click", ()=> alert("Open region: " + r.name));
+      });
+    
+      const legend = d3.select("#regionLegend");
+      if (!legend.empty()){
+        legend.selectAll("li").data(
+          [...new Map(regions.map(r => [String(r.id).split('.')[0], r])).values()]
+        )
+        .enter().append("li")
+        .html((r,i)=>`
+          <span style="display:inline-block;width:.9rem;height:.9rem;border-radius:9999px;margin-right:.35rem;background:${colors[i%colors.length]}"></span>${r.name}
+        `)
+        .attr("data-name", d=>d.name);
+      }
+      function showLegendHighlight(name){
+        legend.selectAll("li").style("opacity", d=>!name || d.name===name ? 1 : 0.5);
+      }
+    }
+
+
+    window.addEventListener('DOMContentLoaded', async ()=>{
+      renderStatus();
+      route();
+      hydrate();
+      await loadDraft();             // NEW
+      await refreshCurrentCycleUI(); // NEW
+      setInterval(renderStatus, 60*1000);
+    });
+
+    
+    window.addEventListener('hashchange', route);
+
+    
+   /* window.addEventListener('hashchange', ()=>{
+      const n = phaseFromHash();
+      if (n) setPhase(n);
+    });*/
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"></script>
+
+</body>
+</html>
