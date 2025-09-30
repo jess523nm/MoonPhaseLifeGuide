@@ -267,6 +267,7 @@
           </div>
     
           <div class="text-sm text-slate-600">Monthly Stage: <span id="lifeStage" class="font-medium">—</span></div>
+          <div class="text-sm text-slate-600">My Purpose: <span id="myPurpose">—</span></div>
           <div class="text-sm text-slate-600">Next phase: <span id="nextEvent">—</span></div>
         </div>
     
@@ -283,16 +284,8 @@
       <section class="card rounded-2xl p-6 shadow">
         <h2 class="text-lg font-semibold mb-4 text-center">Cycle Navigator</h2>
         <div class="phase-ring">
+          <!-- TOP = Phase 2 -->
           <div class="dot" style="left:50%; top:6%;">
-            <button class="node" onclick="goPhase(1)">
-              <span class="pip"></span>
-              <div class="flex flex-col items-start">
-                <span class="text-xs uppercase tracking-wide opacity-80">Phase 1</span>
-                <span class="font-medium">Wait for Purpose</span>
-              </div>
-            </button>
-          </div>
-          <div class="dot" style="left:94%; top:50%;">
             <button class="node" onclick="goPhase(2)">
               <span class="pip"></span>
               <div class="flex flex-col items-start">
@@ -301,7 +294,9 @@
               </div>
             </button>
           </div>
-          <div class="dot" style="left:50%; top:94%;">
+        
+          <!-- RIGHT = Phase 3 -->
+          <div class="dot" style="left:94%; top:50%;">
             <button class="node" onclick="goPhase(3)">
               <span class="pip"></span>
               <div class="flex flex-col items-start">
@@ -310,7 +305,9 @@
               </div>
             </button>
           </div>
-          <div class="dot" style="left:6%; top:50%;">
+        
+          <!-- BOTTOM = Phase 4 -->
+          <div class="dot" style="left:50%; top:94%;">
             <button class="node" onclick="goPhase(4)">
               <span class="pip"></span>
               <div class="flex flex-col items-start">
@@ -319,7 +316,19 @@
               </div>
             </button>
           </div>
+        
+          <!-- LEFT = Phase 1 -->
+          <div class="dot" style="left:6%; top:50%;">
+            <button class="node" onclick="goPhase(1)">
+              <span class="pip"></span>
+              <div class="flex flex-col items-start">
+                <span class="text-xs uppercase tracking-wide opacity-80">Phase 1</span>
+                <span class="font-medium">Wait for Purpose</span>
+              </div>
+            </button>
+          </div>
         </div>
+
         <p class="text-center text-slate-500 mt-4 text-sm">
           Current phase is pinned to the north; tap a button to open that page.
         </p>
@@ -341,7 +350,9 @@
             <!-- Simple legend -->
             <div class="absolute right-3 bottom-3 bg-black/25 backdrop-blur-sm
                 border border-white/15 rounded-xl p-3 text-xs">
-              <div class="font-semibold mb-1">Regions (9)</div>
+                <div class="font-semibold mb-1">
+                  Regions (<span id="regionCount"></span>)
+                </div>
               <ul id="regionLegend" class="space-y-1"></ul>
             </div>
           </div>
@@ -395,46 +406,49 @@
       </div>
     
       <section class="card rounded-2xl p-6 shadow" data-phase="2">
-            <h2 class="text-xl font-semibold">
-              Phase 2 — Waxing → Advance Your Purpose
-              <span class="phase-badge" data-phase-badge="2" style="display:none">CURRENT</span>
-            </h2>
+        <h2 class="text-xl font-semibold">
+          Phase 2 — Waxing → Advance Your Purpose
+          <span class="phase-badge" data-phase-badge="2" style="display:none">CURRENT</span>
+        </h2>
     
-          <p class="text-sm text-slate-600">Backwards design: end goal → scaffolds → steps → checklist.</p>
-          <div class="grid md:grid-cols-3 gap-4 mt-3">
-            <div>
-              <label class="text-sm text-slate-500">End Goal (by Full Moon)</label>
-              <input id="goal" class="w-full p-3 rounded-xl border border-slate-200" placeholder="e.g., Submit PhD statement draft" />
-            </div>
-            <div>
-              <label class="text-sm text-slate-500">Scaffolds (supports)</label>
-              <textarea id="scaffolds" rows="3" class="w-full p-3 rounded-xl border border-slate-200" placeholder="People, resources, habits… one per line"></textarea>
-            </div>
-            <div>
-              <label class="text-sm text-slate-500">Steps (bite-sized)</label>
-              <textarea id="steps" rows="3" class="w-full p-3 rounded-xl border border-slate-200" placeholder="Action steps… one per line"></textarea>
-            </div>
-          </div>
-          <div class="flex items-center gap-3 mt-3">
-            <button class="bg-slate-900 text-white px-4 py-2 rounded-xl" onclick="generateChecklist()">Make Checklist</button>
-            <button class="px-3 py-2 rounded-xl chip" onclick="clearPlan()">Clear</button>
-          </div>
-          <ul id="checklist" class="mt-4 space-y-2"></ul>
-          
-          <h2 class="text-xl font-semibold">Quick Tasks</h2>
-          <p class="text-sm text-slate-600">Add simple to-dos anytime. They live locally on this device.</p>
+        <!-- PURPOSES (1–5) -->
+        <div class="mt-3">
+          <label class="text-sm text-slate-500 block mb-2">What are your main purposes for this cycle?</label>
+    
+          <ul id="purposeList" class="space-y-2"></ul>
+    
           <div class="flex gap-2 mt-3">
-            <input id="qtInput" class="flex-1 p-3 rounded-xl border border-slate-200" placeholder="Add a task…" />
-            <button class="bg-slate-900 text-white px-4 py-2 rounded-xl" onclick="qtAdd()">Add</button>
+            <input id="purposeInput" class="flex-1 p-3 rounded-xl border border-slate-200" placeholder="Add a purpose (max 5)..." />
+            <button class="bg-slate-900 text-white px-4 py-2 rounded-xl" onclick="addPurpose()">Add</button>
           </div>
-          <ul id="qtList" class="mt-3 space-y-2"></ul>
-          <div class="flex gap-2 mt-3">
-            <button class="px-4 py-2 rounded-xl chip" onclick="qtArchive()">Archive Compjecleted</button>
-            <button class="px-4 py-2 rounded-xl chip" onclick="qtClear()">Clear All</button>
-            <button class="px-4 py-2 rounded-xl chip" onclick="qtPushToPhase2()">Send to Phase 2</button>
-          </div>
-        </section>
+    
+          <div class="text-xs text-slate-500 mt-2">Tip: these appear as “My Purpose” at the top of Home.</div>
+        </div>
+    
+        <hr class="my-5 border-white/15">
+    
+        <!-- TASK CHECKLIST (persists across cycles until deleted) -->
+        <h3 class="text-lg font-semibold">Task Checklist</h3>
+        <div class="flex gap-2 mt-3">
+          <input id="taskInput" class="flex-1 p-3 rounded-xl border border-slate-200" placeholder="Add a task..." />
+          <button class="bg-slate-900 text-white px-4 py-2 rounded-xl" onclick="taskAddFromInput()">Add</button>
+        </div>
+
+    
+        <div class="flex gap-2 mt-2">
+          <button class="px-4 py-2 rounded-xl chip" onclick="taskArchiveCompleted()">Archive Completed</button>
+          <button class="px-4 py-2 rounded-xl chip" onclick="taskClearAll()">Clear All</button>
+        </div>
+    
+        <h4 class="text-md font-medium mt-5">Current Tasks</h4>
+        <ul id="taskList" class="mt-3 space-y-2"></ul>
+    
+        <div class="text-xs text-slate-500 mt-4">
+          Notes: Tasks carry forward into each new cycle until you delete them. “Archive” keeps a month-by-month history of everything you added or completed.
+        </div>
+      </section>
     </section>
+
     
     <!-- ============== PHASE 3 PAGE ============== -->
     <section id="page-phase-3" class="page">
@@ -525,8 +539,12 @@
     
     function fmtDate(d){
       return d.toLocaleString([], {
-        year:'numeric', month:'short', day:'2-digit',
-        hour:'2-digit', minute:'2-digit'
+        weekday: 'long',        // ← adds day of week
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
       });
     }
 
@@ -596,91 +614,42 @@
     }
     
     function drawMoon(container, illum, waxing, phase01){
-      // illum: 0..1 (fraction illuminated)
-      // waxing: boolean
-      // phase01: 0=new, .25=first quarter, .5=full, .75=last quarter
-    
       const w = container.clientWidth, h = container.clientHeight;
       const r = Math.min(w,h)/2, cx=w/2, cy=h/2;
     
-      // clear
       container.innerHTML = '';
       const NS = 'http://www.w3.org/2000/svg';
       const svg = document.createElementNS(NS,'svg');
       svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-      svg.setAttribute('class','watercolor rounded-full');
       container.appendChild(svg);
     
-      // base dark disk
+      // Dark background disk
       const dark = document.createElementNS(NS,'circle');
-      dark.setAttribute('cx', cx); dark.setAttribute('cy', cy); dark.setAttribute('r', r);
-      dark.setAttribute('fill', '#0b1324');
+      dark.setAttribute('cx',cx); dark.setAttribute('cy',cy); dark.setAttribute('r',r);
+      dark.setAttribute('fill','#0b1324');
       svg.appendChild(dark);
     
-      if (illum <= 0.001) return;                       // new moon → fully dark
-      if (illum >= 0.999){                               // full moon → simple white disk
-        const full = document.createElementNS(NS,'circle');
-        full.setAttribute('cx',cx); full.setAttribute('cy',cy); full.setAttribute('r',r*0.98);
-        full.setAttribute('fill','white'); full.setAttribute('opacity','0.96');
-        svg.appendChild(full); return;
-      }
-    
-      // Terminator geometry:
-      // Let cos(phi) = 1 - 2*illum  (phi = 2π * phase)
-      // The illuminated limb is drawn by two arcs: a circle arc (radius r) and
-      // an ellipse arc (rx = r * |cos(phi)|, ry = r). This produces the proper curved edge.
-      const c = Math.max(0, Math.min(1, Math.abs(1 - 2*illum))); // |cos(phi)| in [0..1]
-      const rx2 = r * c;                                         // second-arc x-radius
-    
-      // Which side is lit?
-      // For waxing, light is on the RIGHT in N-hemisphere convention; waning → LEFT.
-      // We control that by the sweep flag of the second arc.
-      const lightOnRight = waxing;
-    
-      // Build the lit shape path (two arcs, closed)
-      // Start at leftmost point of the disk
-      const largeArc = 1;             // we draw a full semicircle for the first arc
-      const sweepOuter = 1;           // left → right along the top
-      const sweepInner = lightOnRight ? 1 : 0;
-    
-      const d = [
-        `M ${cx - r},${cy}`,
-        // outer semicircle (circle arc)
-        `A ${r} ${r} 0 ${largeArc} ${sweepOuter} ${cx + r},${cy}`,
-        // inner ellipse arc back to start (controls the luminous curve)
-        `A ${rx2} ${r*0.98} 0 ${largeArc} ${sweepInner} ${cx - r},${cy}`,
-        'Z'
-      ].join(' ');
-    
-      // Clip the lit shape to the moon disk (belt-and-suspenders)
-      const defs = document.createElementNS(NS,'defs');
-      const clip = document.createElementNS(NS,'clipPath'); clip.setAttribute('id','moonClip');
-      const disk = document.createElementNS(NS,'circle');
-      disk.setAttribute('cx',cx); disk.setAttribute('cy',cy); disk.setAttribute('r',r*0.99);
-      clip.appendChild(disk); defs.appendChild(clip); svg.appendChild(defs);
-    
-      // Draw lit region
-      const lit = document.createElementNS(NS,'path');
-      lit.setAttribute('d', d);
-      lit.setAttribute('fill', 'white');
-      lit.setAttribute('clip-path', 'url(#moonClip)');
-      lit.setAttribute('opacity', '0.96');
-      const shade = document.createElementNS(NS,'radialGradient');
-        shade.setAttribute('id','moonShade');
-        shade.innerHTML = `
-          <stop offset="60%" stop-color="rgba(0,0,0,0)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0.35)"/>
-        `;
-        defs.appendChild(shade);
-        dark.setAttribute('fill','url(#moonShade)');
+      // Full lit moon
+      const lit = document.createElementNS(NS,'circle');
+      lit.setAttribute('cx',cx); lit.setAttribute('cy',cy); lit.setAttribute('r',r);
+      lit.setAttribute('fill','white');
       svg.appendChild(lit);
     
-      // Gentle limb glow
+      // Shadow crescent
+      const shadow = document.createElementNS(NS,'rect');
+      shadow.setAttribute('x', waxing ? cx : cx - 2*r);
+      shadow.setAttribute('y', cy - r);
+      shadow.setAttribute('width', 2*r * (1-illum));
+      shadow.setAttribute('height', 2*r);
+      shadow.setAttribute('fill','#0b1324');
+      svg.appendChild(shadow);
+    
+      // Limb glow
       const glow = document.createElementNS(NS,'circle');
-      glow.setAttribute('cx',cx); glow.setAttribute('cy',cy); glow.setAttribute('r',r*0.985);
+      glow.setAttribute('cx',cx); glow.setAttribute('cy',cy); glow.setAttribute('r',r);
       glow.setAttribute('fill','none');
-      glow.setAttribute('stroke','rgba(255,255,255,.18)');
-      glow.setAttribute('stroke-width','1.4');
+      glow.setAttribute('stroke','rgba(255,255,255,.2)');
+      glow.setAttribute('stroke-width','1.5');
       svg.appendChild(glow);
     }
 
@@ -1065,36 +1034,283 @@
     function toggleTheme(){ document.documentElement.classList.toggle('dark'); }
     
     // ========================
-    // QUICK TASKS
+    // PURPOSES (1–5) + TASKS (with nested subtasks up to 3 levels)
     // ========================
-    function qtState(){ state.qt = state.qt || []; return state.qt; }
-    function qtSave(){ saveState(state); qtRender(); }
-    function qtAdd(){
-      const el = document.getElementById('qtInput'); const v = el.value.trim(); if(!v) return;
-      qtState().push({text:v, done:false}); el.value=''; qtSave();
+    
+    // ---------- Helpers ----------
+    function monthKeyFromDate(d=new Date()){
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
     }
-    function qtToggle(i){ qtState()[i].done = !qtState()[i].done; qtSave(); }
-    function qtArchive(){ state.qt = qtState().filter(x=>!x.done); qtSave(); }
-    function qtClear(){ delete state.qt; qtSave(); }
-    function qtRender(){
-      const ul = document.getElementById('qtList'); if(!ul) return;
-      ul.innerHTML=''; const items = qtState();
-      if(!items.length){ ul.innerHTML = '<li class="text-slate-500 text-sm">No tasks yet.</li>'; return; }
-      items.forEach((it,i)=>{
-        const li = document.createElement('li'); li.className='flex items-center gap-3';
-        li.innerHTML = `<input type="checkbox" ${it.done?'checked':''} onchange="qtToggle(${i})" />
-                        <span ${it.done?'class="line-through text-slate-400"':''}>${escapeHtml(it.text)}</span>`;
+    function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+    
+    // ---------- Purposes (per cycle, capped at 5) ----------
+    function purposeState(){ state.purposes = state.purposes || []; return state.purposes; }
+    
+    function addPurpose(){
+      const inp = document.getElementById('purposeInput');
+      const v = (inp.value||'').trim();
+      if (!v) return;
+      const arr = purposeState();
+      if (arr.length >= 5){ alert('You can add up to five purposes.'); return; }
+      arr.push(v);
+      inp.value = '';
+      saveState(state);
+      renderPurposeList();
+      updateMyPurposeBanner();
+    }
+    
+    function removePurpose(i){
+      const arr = purposeState();
+      arr.splice(i,1);
+      saveState(state);
+      renderPurposeList();
+      updateMyPurposeBanner();
+    }
+    
+    function renderPurposeList(){
+      const ul = document.getElementById('purposeList');
+      if (!ul) return;
+      ul.innerHTML = '';
+      const arr = purposeState();
+      if (!arr.length){
+        ul.innerHTML = `
+          <li class="text-slate-500 text-sm">1. Fill in your most pressing purpose</li>
+          <li class="text-slate-500 text-sm">2. Fill in your second most crucial purpose</li>
+          <li class="text-slate-500 text-sm">3. Fill in another purpose that is important to you</li>
+        `;
+        return;
+      }
+      arr.forEach((txt, i)=>{
+        const li = document.createElement('li');
+        li.className = 'flex items-start gap-2';
+        li.innerHTML = `
+          <div class="pt-2 text-slate-400">${i+1}.</div>
+          <div class="flex-1">
+            <div class="rounded-xl border border-white/15 bg-white/5 p-2">${escapeHtml(txt)}</div>
+          </div>
+          <button class="chip px-2 py-1 rounded-lg" title="Remove" onclick="removePurpose(${i})">✕</button>
+        `;
         ul.appendChild(li);
       });
     }
-    function qtPushToPhase2(){
-      const items = qtState().filter(x=>x.done === false);
-      if(!items.length){ alert('Nothing to send.'); return; }
-      state.plan = state.plan || { goal:'', scaff:[], steps:[], checklist:[] };
-      items.forEach(x=> state.plan.checklist.push({text:x.text, done:false, from:'quick'}));
-      saveState(state); renderChecklist(); renderCarryOver();
-      alert('Sent to Phase 2 checklist.');
+    
+    function updateMyPurposeBanner(){
+      const el = document.getElementById('myPurpose');
+      if (!el) return;
+      const arr = purposeState();
+      el.textContent = arr.length ? arr.join(' • ') : '—';
     }
+    
+    // ---------- Tasks (persist across cycles until deleted) ----------
+    function taskState(){ state.tasks = state.tasks || []; return state.tasks; }
+    function taskArchiveState(){ state.taskArchive = state.taskArchive || {}; return state.taskArchive; }
+    
+    // ----- Task helpers (robust + consistent 0-based depth) -----
+    function findTask(id, list = taskState()) {
+      for (const t of list) {
+        if (t.id === id) return t;
+        const hit = findTask(id, t.children || []);
+        if (hit) return hit;
+      }
+      return null;
+    }
+    
+    // depth: 0 = root task, 1 = child, 2 = grandchild
+    function taskDepth(id, list = taskState(), depth = 0) {
+      for (const t of list) {
+        if (t.id === id) return depth;
+        const d = taskDepth(id, t.children || [], depth + 1);
+        if (d !== -1) return d;
+      }
+      return -1;
+    }
+    
+    function taskAdd(text, parentId = null) {
+      text = (text || '').trim();
+      if (!text) return;
+    
+      const t = { id: uid(), text, done: false, children: [] };
+    
+      if (parentId) {
+        const parent = findTask(parentId);
+        if (!parent) return;
+    
+        // 0-based depth cap ⇒ allow up to depth 2 (grandchild)
+        const d = taskDepth(parentId);        // parent depth
+        if (d >= 2) {                         // parent already a grandchild
+          alert('Sub-sub-tasks are the deepest level.');
+          return;
+        }
+        parent.children.push(t);
+      } else {
+        taskState().push(t);
+      }
+    
+      saveState(state);
+      renderTaskList();
+    }
+
+    
+    function deleteTask(id, list=taskState()){
+      const i = list.findIndex(t=>t.id===id);
+      if (i !== -1){ list.splice(i,1); return true; }
+      for (const t of list){
+        if (deleteTask(id, t.children)) return true;
+      }
+      return false;
+    }
+    
+    function taskToggle(id){
+      const t = findTask(id, taskState());
+      if (!t) return;
+      t.done = !t.done;
+      saveState(state);
+      renderTaskList();
+    }
+    
+    function taskAddChildPrompt(id){
+      const v = prompt('Add a sub-task:');
+      if (v) taskAdd(v, id);
+    }
+    
+    function taskDelete(id){
+      deleteTask(id, taskState());
+      saveState(state);
+      renderTaskList();
+    }
+    
+    function taskArchiveCompleted(){
+      const monthKey = monthKeyFromDate(new Date());
+      const archive = taskArchiveState();
+      archive[monthKey] = archive[monthKey] || [];
+    
+      // collect & prune (recursive)
+      function collectDone(list){
+        const keep = [];
+        for (const t of list){
+          if (t.done){
+            archive[monthKey].push({ ...t, archivedAt: new Date().toISOString() });
+          } else {
+            t.children = collectDone(t.children||[]);
+            keep.push(t);
+          }
+        }
+        return keep;
+      }
+      state.tasks = collectDone(taskState());
+      saveState(state);
+      renderTaskList();
+      alert('Completed tasks archived.');
+    }
+    
+    function taskClearAll(){
+      if (!confirm('Clear ALL current tasks? This does not delete the archive.')) return;
+      state.tasks = [];
+      saveState(state);
+      renderTaskList();
+    }
+ 
+ 
+    // inline add from a field under a task
+    function taskAddFromField(parentId){
+      const inp = document.getElementById(`subInp-${parentId}`);
+      if (!inp) return;
+      const v = (inp.value || '').trim();
+      if (!v) return;
+      taskAdd(v, parentId);  // uses your existing taskAdd(text, parentId)
+      inp.value = '';
+    }
+    
+    function showSubField(id){
+      const wrap = document.getElementById(`subWrap-${id}`);
+      const trig = document.getElementById(`subTrig-${id}`);
+      if (!wrap) return;
+      wrap.classList.remove('hidden');
+      if (trig) trig.classList.add('hidden');
+      const inp = document.getElementById(`subInp-${id}`);
+      if (inp) inp.focus();
+    }
+    
+    function cancelSubField(id){
+      const wrap = document.getElementById(`subWrap-${id}`);
+      const trig = document.getElementById(`subTrig-${id}`);
+      if (wrap) wrap.classList.add('hidden');
+      if (trig) trig.classList.remove('hidden');
+    }
+
+   
+    function renderTaskList(){
+      const ul = document.getElementById('taskList');
+      if (!ul) return;
+      ul.innerHTML = '';
+    
+      // recursive renderer
+      function renderItems(list, container, depth = 0){
+        list.forEach(t=>{
+          const li = document.createElement('li');
+          li.className = 'rounded-xl border border-white/15 bg-white/5 p-2';
+          // indent by depth (0,1,2) → ml-0, ml-5, ml-10
+          li.style.marginLeft = `${depth * 1.25}rem`;
+    
+        li.innerHTML = `
+          <div class="flex items-center gap-2">
+            <input type="checkbox" ${t.done ? 'checked' : ''} onchange="taskToggle('${t.id}')" />
+            <div class="flex-1 ${t.done ? 'line-through text-slate-400' : ''}">${escapeHtml(t.text)}</div>
+        
+            ${depth < 2 ? `
+              <button id="subTrig-${t.id}" class="chip px-2 py-1 rounded-lg" onclick="showSubField('${t.id}')">
+                Add sub-task
+              </button>
+            ` : ''}
+        
+            <button class="chip px-2 py-1 rounded-lg" onclick="taskDelete('${t.id}')">Delete</button>
+          </div>
+        
+          ${depth < 2 ? `
+            <div id="subWrap-${t.id}" class="hidden mt-2">
+              <div class="flex items-center gap-2">
+                <input id="subInp-${t.id}" class="flex-1 p-2 rounded-lg border border-slate-200"
+                       placeholder="Add a sub-task…"
+                       onkeydown="if(event.key==='Escape'){ cancelSubField('${t.id}') } if(event.key==='Enter'){ taskAddFromField('${t.id}'); cancelSubField('${t.id}') }"/>
+                <button class="bg-slate-900 text-white px-4 py-2 rounded-xl"
+                        onclick="taskAddFromField('${t.id}'); cancelSubField('${t.id}')">
+                  Add
+                </button>
+                <button class="chip px-2 py-1 rounded-lg" onclick="cancelSubField('${t.id}')">Cancel</button>
+              </div>
+            </div>
+          ` : ''}
+        `;
+
+    
+          container.appendChild(li);
+    
+          // children list (one level deeper)
+          if (t.children && t.children.length){
+            const childUL = document.createElement('ul');
+            childUL.className = 'mt-2 space-y-2';
+            li.appendChild(childUL);
+            renderItems(t.children, childUL, depth + 1);
+          }
+        });
+      }
+    
+      renderItems(taskState(), ul, 0);
+    }
+
+    
+    // Hook for the Phase-2 inputs:
+    function taskAddFromInput(){
+      const inp = document.getElementById('taskInput');
+      const v = (inp.value||'').trim();
+      if (!v) return;
+      taskAdd(v);
+      inp.value='';
+    }
+    
+    // Keep the Home “My Purpose” banner fresh once per minute as well
+    setInterval(updateMyPurposeBanner, 60*1000);
+
     
     // Helper: days until the next quarter boundary (New -> 0, First -> .25, Full -> .5, Last -> .75)
     function daysUntilNextQuarter(phase0to1){
@@ -1110,7 +1326,21 @@
       document.querySelectorAll('.page').forEach(p=>{
         p.classList.toggle('active', p.id === id);
       });
+    
+      // Page-enter hooks
+      if (id === 'page-phase-2') {
+        renderPurposeList();
+        renderTaskList();       // <- ensures existing tasks appear immediately
+      }
+      if (id === 'page-phase-4') {
+        renderCarryOver();
+        renderLoose();
+      }
+      if (id === 'page-history') {
+        buildHistory();
+      }
     }
+
     
     function defaultPhaseNumber(){
       try{
@@ -1218,16 +1448,21 @@
     }
 
     
-      // Paint UI
-      document.getElementById('todayStr').textContent = fmtDate(now);
-      document.getElementById('tzStr').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local time';
-      document.getElementById('phaseName').textContent = phaseName;
-      document.getElementById('illumPct').textContent = Math.round(illum*100)+'%';
-      document.getElementById('lifeStage').textContent = lifeStage;
-      document.getElementById('nextEvent').textContent = nextEvent;
+    // Paint UI
+    document.getElementById('todayStr').textContent = fmtDate(now);
+    document.getElementById('tzStr').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local time';
+    document.getElementById('phaseName').textContent = phaseName;
+    document.getElementById('illumPct').textContent = Math.round(illum*100)+'%';
+    document.getElementById('lifeStage').textContent = lifeStage;
+    document.getElementById('nextEvent').textContent = nextEvent;
     
-      // NEW: pass waxing as the 3rd arg
-      drawMoon(document.getElementById('moonCanvas'), illum, waxing, phase01);
+    // NEW: rotate the ring & mark current phase automatically
+    const phaseNum = autoPhaseFromLifeStage(lifeStage);
+    setPhase(phaseNum);
+    
+    // Draw moon
+    drawMoon(document.getElementById('moonCanvas'), illum, waxing, phase01);
+
     }
 
     
@@ -1238,7 +1473,13 @@
       // restore inputs/UI
       const j = document.getElementById('journalInput');
       if (j) j.value = state.journal||'';
-      renderChecklist(); renderCarryOver(); renderLoose(); qtRender();
+        renderChecklist();
+        renderCarryOver();
+        renderLoose();
+        renderPurposeList();
+        renderTaskList();
+        updateMyPurposeBanner();
+
     
       if (state.journalSavedAt){
         const el = document.getElementById('journalSaved');
@@ -1286,12 +1527,12 @@
     
     // Rotate the ring so the selected phase is at the top
     function rotateRingForPhase(n){
-      // Positions are at top/right/bottom/left; rotate so selected comes to "north".
-      // Phase 1 -> 0deg, 2 -> -90deg, 3 -> -180deg, 4 -> -270deg
-      const angle = -(n-1) * 90;
+      // New base: 2→top (0deg), 3→-90deg, 4→-180deg, 1→-270deg
+      const angles = { 1: -270, 2: 0, 3: -90, 4: -180 };
+      const angle = angles[n] ?? 0;
       document.documentElement.style.setProperty('--ring-rot', angle + 'deg');
     }
-    
+
     // Visually mark which section is current (no hiding)
     function markCurrent(n){
       // Add glow to the matching section
@@ -1341,7 +1582,7 @@
       projection.translate([w/2, h/2]).scale(Math.min(w, h) * 0.47);
       const path = d3.geoPath(projection);
     
-      // >>> ADD CLIP PATH RIGHT HERE <<<
+      // Clip to sphere
       svg.append("defs").append("clipPath")
         .attr("id", "clipSphere")
         .append("path")
@@ -1365,62 +1606,127 @@
       const cTopo = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r=>r.json());
       const countries = topojson.mesh(cTopo, cTopo.objects.countries, (a,b)=>a!==b);
       g.append("path").attr("d", path(countries)).attr("class","map-country");
+      
+    // Build one or two pixel-space rectangles for a lon/lat box.
+    // This sidesteps spherical winding/antimeridian issues entirely.
+    function rectPath([lonMin, lonMax, latMin, latMax]) {
+      const eps = 1e-6;
+      const parts = [];
     
-      // Regions (clipped so they don't spill outside)
+      // split if the box crosses the dateline
+      if (lonMin > lonMax) {
+        parts.push([lonMin, 180 - eps, latMin, latMax]);
+        parts.push([-180 + eps, lonMax,  latMin, latMax]);
+      } else {
+        parts.push([lonMin, lonMax, latMin, latMax]);
+      }
+    
+      // project corners and make simple screen-space rectangles
+      return parts.map(([a,b,c,d])=>{
+        const p1 = projection([a, c]); // SW
+        const p2 = projection([b, c]); // SE
+        const p3 = projection([b, d]); // NE
+        const p4 = projection([a, d]); // NW
+        return `M${p1[0]},${p1[1]}L${p2[0]},${p2[1]}L${p3[0]},${p3[1]}L${p4[0]},${p4[1]}Z`;
+      }).join(' ');
+    }
+
+    
+      // ---- Regions ----
       const regionGroup = g.append("g").attr("clip-path", "url(#clipSphere)");
     
       const regions = [
-        { id:1,  name:"North America",                         box:[-170,-50, 10, 75] },
-        { id:2,  name:"Mesoamerica & Caribbean",               box:[-105,-60, -5, 25] },
-        { id:3,  name:"South America",                         box:[-82,-35, -56, 13] },
-        { id:4,  name:"Oceania & Nearby (W)",                  box:[110,180, -25, 20] },
-        { id:4.1,name:"Oceania & Nearby (E)",                  box:[-180,-140, -25, 15] },
-        { id:5,  name:"Asia – Temperate / Steppe / Highland",  box:[ 40,140,   5, 60] },
-        { id:6,  name:"Asia – Monsoon / Maritime",             box:[ 65,145, -10, 35] },
-        { id:7,  name:"Africa – Sub-Saharan",                  box:[-20, 52, -35, 15] },
-        { id:8,  name:"North Africa & Middle East",            box:[-17, 60,  15, 40] },
-        { id:9,  name:"Europe (Pre-Roman / Pre-Christian)",    box:[-12, 60,  35, 72] },
+        { id:1,  name:"North America",                        box:[-170,-50, 10, 75] },
+        { id:2,  name:"Central America & Caribbean",          box:[-105,-60,  5, 25] },
+        { id:3,  name:"South America",                        box:[ -82,-35,-56, 13] },
+        { id:4,  name:"Europe",                               box:[ -12,  60, 35, 72] },
+        { id:5,  name:"Middle East & North Africa",           box:[ -17,  60, 15, 40] },
+        { id:6,  name:"Africa – Sub-Saharan",                 box:[ -20,  52,-35, 15] },
+        { id:7,  name:"Asia – Temperate / Steppe / Highland", box:[  40, 140,  5, 60] },
+        { id:8,  name:"Asia – Monsoon / Maritime",            box:[  65, 145,-10, 35] },
+        { id:9,  name:"Oceania & Pacific (West)",             box:[ 110, 180,-25, 20] },
+        { id:10, name:"Oceania & Pacific (East)",             box:[-180,-140,-25, 15] },
       ];
-      const colors = ["#8BB8FF","#9FE0D4","#F7C07B","#E59BCC","#9AD07A","#F18F8B","#C7B7FF","#FFD08A","#8BC6C6"];
+
+        const countEl = document.getElementById('regionCount');
+        if (countEl) countEl.textContent = regions.length;   
     
-      function boxPoly([wmin, wmax, smin, smax]){
-        const p = [[wmin,smin],[wmax,smin],[wmax,smax],[wmin,smax],[wmin,smin]];
-        return { type:"Feature", geometry:{ type:"Polygon", coordinates:[p] } };
-      }
+      const colors = ["#8BB8FF","#9FE0D4","#F7C07B","#E59BCC","#9AD07A",
+                      "#F18F8B","#C7B7FF","#FFD08A","#8BC6C6","#A5B4FC"];
+                      
+        // Replace your boxPoly with this:
+        function boxPoly([lonMin, lonMax, latMin, latMax]){
+          const eps = 1e-6;
+        
+          // Clamp to < ±180 and > ∓180 so we never hit the exact meridian
+          lonMin = Math.max(lonMin, -180 + eps);
+          lonMax = Math.min(lonMax,  180 - eps);
+        
+          // If a rectangle ever crosses the dateline (lonMin > lonMax), split it
+          if (lonMin > lonMax){
+            const leftRing = [
+              [lonMin, latMin], [180 - eps, latMin],
+              [180 - eps, latMax], [lonMin, latMax],
+              [lonMin, latMin]
+            ];
+            const rightRing = [
+              [-180 + eps, latMin], [lonMax, latMin],
+              [lonMax, latMax], [-180 + eps, latMax],
+              [-180 + eps, latMin]
+            ];
+            return {
+              type: "Feature",
+              geometry: { type: "MultiPolygon", coordinates: [ [leftRing], [rightRing] ] }
+            };
+          }
+        
+          const ring = [
+            [lonMin, latMin], [lonMax, latMin],
+            [lonMax, latMax], [lonMin, latMax],
+            [lonMin, latMin]
+          ];
+          return { type: "Feature", geometry: { type: "Polygon", coordinates: [ring] } };
+        }
+
+        regions.forEach((r,i)=>{
+          const dRect = rectPath(r.box);
+        
+          // visible fill
+          regionGroup.append("path")
+            .attr("d", dRect)
+            .attr("class","map-region")
+            .attr("fill", colors[i % colors.length])
+            .attr("fill-opacity", .14)
+            .attr("data-name", r.name);
+        
+          // hit area
+          regionGroup.append("path")
+            .attr("d", dRect)
+            .attr("class","map-hit")
+            .attr("fill-rule","evenodd")     // extra safety
+            .style("pointer-events","all")   // ensure the path is hittable
+            .on("mouseenter", function(){
+              d3.select(this.previousSibling).attr("fill-opacity", .28);
+              showLegendHighlight(r.name);
+            })
+            .on("mouseleave", function(){
+              d3.select(this.previousSibling).attr("fill-opacity", .14);
+              showLegendHighlight(null);
+            })
+            .on("click", ()=> alert("Open region: " + r.name));
+        });
+
     
-      regions.forEach((r,i)=>{
-        const feat = boxPoly(r.box);
-        regionGroup.append("path")
-          .attr("d", path(feat))
-          .attr("class","map-region")
-          .attr("fill", colors[i % colors.length])
-          .attr("data-name", r.name);
-    
-        regionGroup.append("path")
-          .attr("d", path(feat))
-          .attr("class","map-hit")
-          .on("mouseenter", function(){
-            d3.select(this.previousSibling).attr("fill-opacity", .28);
-            showLegendHighlight(r.name);
-          })
-          .on("mouseleave", function(){
-            d3.select(this.previousSibling).attr("fill-opacity", .14);
-            showLegendHighlight(null);
-          })
-          .on("click", ()=> alert("Open region: " + r.name));
-      });
-    
+      // Legend
       const legend = d3.select("#regionLegend");
       if (!legend.empty()){
-        legend.selectAll("li").data(
-          [...new Map(regions.map(r => [String(r.id).split('.')[0], r])).values()]
-        )
-        .enter().append("li")
-        .html((r,i)=>`
-          <span style="display:inline-block;width:.9rem;height:.9rem;border-radius:9999px;margin-right:.35rem;background:${colors[i%colors.length]}"></span>${r.name}
-        `)
-        .attr("data-name", d=>d.name);
+        legend.selectAll("li").data(regions).enter().append("li")
+          .html((r,i)=>`
+            <span style="display:inline-block;width:.9rem;height:.9rem;border-radius:9999px;margin-right:.35rem;background:${colors[i%colors.length]}"></span>${r.name}
+          `)
+          .attr("data-name", d=>d.name);
       }
+      
       function showLegendHighlight(name){
         legend.selectAll("li").style("opacity", d=>!name || d.name===name ? 1 : 0.5);
       }
