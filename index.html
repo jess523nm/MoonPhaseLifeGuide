@@ -6,6 +6,7 @@
   <title>Moon Phase Life Compass — v0.1</title>
   <!-- Tailwind via CDN for fast prototyping -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
     <style>
     
         .phase-title { text-align:center; }
@@ -142,6 +143,37 @@
       box-shadow: inset 0 0 14px rgba(139,184,255,.18), 0 0 10px rgba(139,184,255,.12);
     }
 
+    /* Word styles – three tiers */
+    #cosmic-bg .t{
+      position:absolute; white-space:nowrap; user-select:none;
+      color: rgba(255,255,255,.15);
+      text-shadow:
+        0 0 14px rgba(150,190,255,.20),
+        0 0 28px rgba(120,160,255,.14);
+      letter-spacing:.02em;
+    }
+    #cosmic-bg .A{ font-weight:700; opacity:.18; }   /* purposes */
+    #cosmic-bg .B{ font-weight:600; opacity:.14; }   /* goals */
+    #cosmic-bg .C{ font-weight:500; opacity:.10; }   /* journal words */
+    
+    /* gentle twinkle on background words */
+    @keyframes slowTwinkle { 0%{opacity:.7} 50%{opacity:1} 100%{opacity:.7} }
+    #cosmic-bg .t { animation: slowTwinkle 9s ease-in-out infinite; }
+    #cosmic-bg .t:nth-child(3n){ animation-duration: 11s }
+    #cosmic-bg .t:nth-child(4n){ animation-duration: 13s }
+    
+    /* responsive size ranges */
+    @media (min-width: 900px){
+      #cosmic-bg .A{ font-size: clamp(36px, 8vw, 84px); }
+      #cosmic-bg .B{ font-size: clamp(20px, 4.5vw, 40px); }
+      #cosmic-bg .C{ font-size: clamp(12px, 2.6vw, 20px); }
+    }
+    @media (max-width: 899px){
+      #cosmic-bg .A{ font-size: clamp(28px, 9vw, 56px); }
+      #cosmic-bg .B{ font-size: clamp(16px, 5.5vw, 30px); }
+      #cosmic-bg .C{ font-size: clamp(10px, 3.5vw, 16px); }
+    }
+
 
     /* Word-cloud stage */
     #cloud{
@@ -159,6 +191,8 @@
         inset 0 -60px 120px rgba(20,30,60,.55);
     }
     
+
+   
     /* Twinkling stars */
     #cloud::before, #cloud::after{
       content:"";
@@ -228,13 +262,24 @@
         .map-region:hover { fill-opacity:.34; }
         .map-hit          { fill:transparent; cursor:pointer; }
 
-
-
-
+        /* --- Phase 4: Loom-of-stars background --- */
+        #page-phase-4 { position: relative; overflow: clip; }
+        #loomBG{
+          position:absolute; inset:0;
+          z-index:0;                /* keeps it behind your cards */
+          pointer-events:none;
+          opacity: .9;              /* overall softness */
+        }
+        .phase4-foreground { position: relative; z-index:1; } /* add to your content wrapper if needed */
+        
+        /* optional: slightly tighten the card contrast on this page */
+        #page-phase-4 .card{ box-shadow: inset 0 0 60px rgba(139,184,255,.10); }
+        
     </style>
 
 </head>
 <body class="min-h-screen">
+    <div id="cosmic-bg" aria-hidden="true"></div>
   <header class="p-6 md:p-10">
     <div class="max-w-5xl mx-auto flex items-center gap-4">
       <div class="w-12 h-12 rounded-full bg-gradient-to-br from-slate-200 to-white moon-glow"></div>
@@ -477,7 +522,10 @@
     <!-- ============== PHASE 4 PAGE ============== -->
     <section id="page-phase-4" class="page">
       <button class="back-btn mb-4" onclick="goHome()">← Back to Main Menu</button>
-    
+      
+      <!-- Phase 4 background -->
+      <div id="loomBG" aria-hidden="true"></div>
+
       <div class="phase-title mb-4">
         <div class="kicker">Phase 4</div>
         <div class="rule"></div>
@@ -490,7 +538,7 @@
               <span class="phase-badge" data-phase-badge="4" style="display:none">CURRENT</span>
             </h2>
     
-          <p class="text-sm text-slate-600">Carry over anything unfinished from Phase 2 and capture new loose ends. Archive what no longer serves.</p>
+          <p class="text-sm text-slate-600">After a courageous week of movement and a centering week of gratitude, this is the weaving week. Gather the loose threads you dropped, prune the branches that no longer serve, re-stitch what matters, and offer thanks as you move toward rest and renewal.</p>
     
           <div class="mt-3">
             <h3 class="font-medium">Carry Over from Phase 2</h3>
@@ -522,6 +570,68 @@
     <section class="p-4 text-xs text-slate-500">
       <p><strong>Privacy:</strong> All data is stored locally in your browser by default. When you turn on cloud sync later (Supabase + Google sign‑in), your entries will save securely to your private database.</p>
     </section>
+    
+    <!-- ===== Beta Disclaimer Modal (always shows on Home) ===== -->
+<div id="betaModal"
+     class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+  <!-- Dialog -->
+  <div class="relative max-w-2xl w-full">
+    <div role="dialog" aria-modal="true" aria-labelledby="betaTitle"
+         class="card rounded-2xl p-5 md:p-6 shadow-lg border border-white/15 bg-white/5">
+      <h3 id="betaTitle" class="text-xl md:text-2xl font-semibold mb-3">
+        🌙 Moon Phase Life Guide (Early Beta Version) 🌙
+      </h3>
+
+      <!-- Scrollable body -->
+      <div id="betaBody" class="text-slate-300 text-sm leading-relaxed max-h-[65vh] overflow-auto pr-1 md:pr-2 space-y-4">
+        <p>✨ Please be aware that this is a very early beta version of an app designed to help users align their life direction with the natural cycles of the moon. Through weekly meditative practices, the Moon Phase Life Guide supports reflection, balance, and gentle personal growth.</p>
+
+        <div>
+          <p class="font-medium text-slate-200">🌕 Coming Soon:</p>
+          <ul class="list-disc pl-5 space-y-2">
+            <li>Exploration of global Indigenous moon traditions of approximately 120 global Indigenous moon-phase systems spanning 9 continental regions with 80+ specific cultural zones, and hundreds of individual phase names, symbolic cycles, and direct links to cultural and linguistic community data when available to the public.</li>
+            <li>The ability to choose a moon tradition theme from different cultures that will adjust the art and prompts of your reflection and action cycles.</li>
+            <li>Personal journaling archives with interactive word clouds for to help reflect on your goals and thoughts</li>
+            <li>A to-do list goal tracker to organize weekly tasks within overarching life intentions</li>
+            <li>Meditation ideas for reconnection with nature and Indigenous grounding traditions</li>
+            <li>Organization and cleaning tips rooted in trauma-informed, compassionate care</li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="font-medium text-slate-200">🌒 Purpose of the App:</p>
+          <p>This guide was created to help users cultivate mindfulness, balance, and healing by reconnecting with the natural cycles that have guided humanity for generations.</p>
+        </div>
+
+        <!-- Disclaimer footer (inside scroll) -->
+        <div class="pt-2 border-t border-white/10 text-xs text-slate-400">
+          Disclaimer: This is a beta version that currently includes only preliminary brainstorm research. More research is needed to verify the accuracy of cultural data. Please consult community-published sources for authoritative information.
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="mt-4 flex items-center justify-between gap-3">
+        <label class="flex items-center gap-2 text-xs md:text-sm text-slate-300 select-none">
+          <input id="betaAgree" type="checkbox"
+                 class="accent-blue-400 rounded-sm">
+          I agree
+        </label>
+
+        <div class="flex items-center gap-2">
+          <button id="betaContinue"
+                  class="bg-slate-900 text-white px-4 py-2 rounded-xl opacity-50 cursor-not-allowed"
+                  disabled>
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
   </main>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
@@ -529,6 +639,63 @@
     <script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@4"></script>
 
     <script>
+    
+    // ===== Beta Modal logic (always open on Home) =====
+    function showBetaNotice() {
+      const modal = document.getElementById('betaModal');
+      if (!modal) return;
+    
+      // Reset checkbox + button each time it opens
+      const agree = document.getElementById('betaAgree');
+      const btn   = document.getElementById('betaContinue');
+      if (agree) agree.checked = false;
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    
+      // Show
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    
+      // Wire up interactions (idempotent)
+      if (agree && !agree._wired) {
+        agree.addEventListener('change', () => {
+          if (agree.checked) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+          } else {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+          }
+        });
+        agree._wired = true;
+      }
+    
+      if (btn && !btn._wired) {
+        btn.addEventListener('click', () => {
+          closeBetaNotice();
+        });
+        btn._wired = true;
+      }
+    
+      // ESC to close (only if agreed)
+      document.addEventListener('keydown', escCloseOnce);
+      function escCloseOnce(e){
+        if (e.key === 'Escape' && agree && agree.checked) {
+          closeBetaNotice();
+          document.removeEventListener('keydown', escCloseOnce);
+        }
+      }
+    }
+    
+    function closeBetaNotice() {
+      const modal = document.getElementById('betaModal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
     // ========================
     // STORAGE / UTIL
     // ========================
@@ -549,11 +716,78 @@
     }
 
     function escapeHtml(str){
+      // Standard-safe HTML escaping
       return String(str).replace(/[&<>"']/g, ch => ({
-        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'
+        '&' : '&amp;',
+        '<' : '&lt;',
+        '>' : '&gt;',
+        '"' : '&quot;',
+        "'" : '&#39;'
       }[ch]));
     }
+
     
+    // --- Build a cosmic word backdrop from purposes, goals, and journal keywords
+    async function rebuildCosmicBackground(){
+      const host = document.getElementById('cosmic-bg');
+      if (!host) return;
+      host.innerHTML = '';
+    
+      const W = window.innerWidth, H = window.innerHeight;
+    
+      // a) purposes (up to 3)
+      const purposes = (state.purposes || []).slice(0,3);
+    
+      // b) goals from Phase 2 checklist: prefer completed; else first few
+      const goalsAll  = (state.plan?.checklist || []).map(x=>x.text);
+      const goalsDone = (state.plan?.checklist || []).filter(x=>x.done).map(x=>x.text);
+      const goals = (goalsDone.length ? goalsDone : goalsAll).slice(0,6);
+    
+      // c) 20–30 journal keywords from ALL entries this cycle
+      const cycle   = await getOrCreateCurrentCycle();
+      const entries = await idbIndexAll('entries','by_cycle', cycle.id);
+      const topWords = topJournalWords(entries.map(e=>e.text).join(' '), 30);
+    
+      function put(txt, cls){
+        const span = document.createElement('span');
+        span.className = `t ${cls}`;
+        span.textContent = txt;
+    
+        const pad = 40;
+        const x = Math.random()*(W - pad*2) + pad;
+        const y = Math.random()*(H - pad*2) + pad;
+    
+        span.style.left = x + 'px';
+        span.style.top  = y + 'px';
+        span.style.transform = `translate(-50%,-50%) rotate(${(Math.random()*8-4).toFixed(1)}deg)`;
+        host.appendChild(span);
+      }
+    
+      purposes.forEach(w=> put(w, 'A'));
+      goals.forEach(w    => put(w, 'B'));
+      topWords.forEach(w => put(w, 'C'));
+    }
+    
+    // simple keyword extractor (syncs with your word-cloud approach)
+    function topJournalWords(text, n=30){
+      const stop = new Set([
+        'the','and','a','an','to','of','in','for','on','with','it','is','that','this',
+        'i','you','my','me','we','our','your','at','as','be','are','was','were','but',
+        'so','if','or','by','from','about','into','than','then','there','here','not',
+        'just','very','really','also','too','can','will','would','could','should'
+      ]);
+      const words = (text||'').toLowerCase()
+        .replace(/[^a-z0-9\s']/g,' ')
+        .split(/\s+/).map(w=>w.replace(/^'+|'+$/g,''))
+        .filter(w=>w && w.length>2 && !stop.has(w));
+    
+      const freq = {};
+      for (const w of words) freq[w]=(freq[w]||0)+1;
+      return Object.entries(freq)
+        .sort((a,b)=>b[1]-a[1])
+        .slice(0,n)
+        .map(([w])=>w);
+    }
     
     // ---- IndexedDB (local-first) ----
     const DB_NAME='moon_journal_v1', DB_VERSION=1;
@@ -853,6 +1087,7 @@
       const s=(await idbGet('settings','app'))||{}; s.autosaveDraft=null; await idbSet('settings','app',s);
       ta.value=''; saveJournal();
       await refreshCurrentCycleUI();
+      await rebuildCosmicBackground();
     }
     
     // Build feed + make cloud from ALL entries in the current cycle
@@ -921,7 +1156,7 @@
             p.className='text-sm opacity-90 mb-2';
             p.innerHTML=`<div class="opacity-60 text-[11px]">${new Date(e.createdAtISO).toLocaleString()}</div>
                          <div>${(e.text.length>300? e.text.slice(0,300)+'…' : e.text)
-                           .replace(/[&<>]/g,s=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[s]))}</div>`;
+                           .replace(/[&<>]/g,s=>({ '&':'&','<':'<','>':'>' }[s]))}</div>`;
             body.appendChild(p);
           });
         wrap.appendChild(sec);
@@ -966,9 +1201,10 @@
       const steps = (document.getElementById('steps').value||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
       state.plan = { goal, scaff, steps, checklist: steps.map(s=>({text:s, done:false})) };
       saveState(state); renderChecklist(); renderCarryOver();
+      rebuildCosmicBackground();
     }
     function clearPlan(){ delete state.plan; saveState(state); renderChecklist(); renderCarryOver(); }
-    function toggleCheck(i){ state.plan.checklist[i].done = !state.plan.checklist[i].done; saveState(state); renderChecklist(); renderCarryOver(); }
+    function toggleCheck(i){ state.plan.checklist[i].done = !state.plan.checklist[i].done; saveState(state); renderChecklist(); renderCarryOver(); rebuildCosmicBackground();}
     function renderChecklist(){
       const ul = document.getElementById('checklist'); ul.innerHTML='';
       if(!state.plan){ ul.innerHTML = '<li class="text-slate-500 text-sm">No checklist yet.</li>'; return; }
@@ -978,6 +1214,159 @@
         li.innerHTML = `<input type="checkbox" ${item.done?'checked':''} onchange="toggleCheck(${i})" /> <span ${item.done?'class="line-through text-slate-400"':''}>${escapeHtml(item.text)}</span>`;
         ul.appendChild(li);
       });
+    }
+    
+
+    // === Phase 4 "Loom of Stars" background =========================
+    function renderLoomBackground(){
+      const host = document.getElementById('loomBG');
+      if (!host) return;
+    
+      // clear + size
+      host.innerHTML = '';
+      const w = host.clientWidth || 1024;
+      const h = host.clientHeight || 640;
+    
+      const NS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+      svg.setAttribute('preserveAspectRatio', 'none');
+      host.appendChild(svg);
+    
+      // ---- gradient night sky ----
+      const defs = document.createElementNS(NS, 'defs');
+      svg.appendChild(defs);
+    
+      const grad = document.createElementNS(NS, 'radialGradient');
+      grad.setAttribute('id', 'gNight');
+      grad.setAttribute('cx', '70%'); grad.setAttribute('cy', '0%');
+      grad.setAttribute('r', '100%');
+        // inside renderLoomBackground()
+        grad.innerHTML = `
+          <stop offset="0%"  stop-color="#9678dc" stop-opacity=".20"/>
+          <stop offset="45%" stop-color="#080c18" stop-opacity=".20"/>
+          <stop offset="100%" stop-color="#080c18" stop-opacity="1"/>
+        `;
+      defs.appendChild(grad);
+    
+      const bg = document.createElementNS(NS, 'rect');
+      bg.setAttribute('width', w); bg.setAttribute('height', h);
+      bg.setAttribute('fill', 'url(#gNight)');
+      svg.appendChild(bg);
+    
+      // ---- stars (two layers, twinkling via opacity animation) ----
+      const style = document.createElementNS(NS, 'style');
+      style.textContent = `
+        @keyframes twA { 0%{opacity:.45} 50%{opacity:1} 100%{opacity:.45} }
+        @keyframes twB { 0%{opacity:.35} 50%{opacity:.9} 100%{opacity:.35} }
+        .twA { animation: twA 8s linear infinite; }
+        .twB { animation: twB 11s linear infinite reverse; }
+        .thread { vector-effect: non-scaling-stroke; }
+      `;
+      defs.appendChild(style);
+    
+      function rand(min, max){ return min + Math.random()*(max-min); }
+    
+      // scatter stars
+      function addStars(count, cls, sizeRange, colorRange){
+        const g = document.createElementNS(NS, 'g');
+        g.setAttribute('class', cls);
+        for (let i=0;i<count;i++){
+          const c = document.createElementNS(NS, 'circle');
+          c.setAttribute('cx', rand(0,w));
+          c.setAttribute('cy', rand(0,h));
+          c.setAttribute('r', rand(sizeRange[0], sizeRange[1]));
+          const hue = rand(colorRange[0], colorRange[1]);
+          const alpha = rand(0.5, 0.9);
+          c.setAttribute('fill', `hsla(${hue}, 80%, 88%, ${alpha})`);
+          g.appendChild(c);
+        }
+        svg.appendChild(g);
+      }
+    
+      addStars(Math.round(w*h/9000), 'twA', [0.6,1.4], [190,240]); // small
+      addStars(Math.round(w*h/22000), 'twB', [1.2,2.2], [210,270]); // medium
+        
+      // ---- luminous threads (the “loom”) ---------------------------
+      const threadG = document.createElementNS(NS, 'g');
+      threadG.setAttribute('opacity', '.85');
+      svg.appendChild(threadG);
+    
+      const lanes = 6;                          // horizontal warp threads
+      for (let i=0;i<lanes;i++){
+        const y = h*(0.18 + i*(0.64/(lanes-1)));
+        const p = [];
+        const segments = 10;
+        for (let s=0; s<=segments; s++){
+          const x = (w/segments)*s;
+          const jitter = Math.sin((s+i*1.7))*12 + (Math.random()-0.5)*8;
+          p.push([x, y + jitter]);
+        }
+        const d = 'M ' + p.map(([x,y])=>`${x},${y}`).join(' L ');
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('fill','none');
+        path.setAttribute('stroke','rgba(180,210,255,.25)');
+        path.setAttribute('stroke-width','1');
+        path.setAttribute('class','thread');
+        path.setAttribute('stroke-dasharray','6 8');
+        path.setAttribute('stroke-linecap','round');
+        threadG.appendChild(path);
+    
+        // subtle “weft” stitch lines crossing
+        for (let k=0;k<5;k++){
+          const x = rand(0.1*w, 0.9*w);
+          const y2 = y + rand(-30,30);
+          const weft = document.createElementNS(NS, 'line');
+          weft.setAttribute('x1', x-60); weft.setAttribute('y1', y2-3);
+          weft.setAttribute('x2', x+60); weft.setAttribute('y2', y2+3);
+          weft.setAttribute('stroke','rgba(155,185,255,.16)');
+          weft.setAttribute('stroke-width','0.9');
+          weft.setAttribute('class','thread');
+          threadG.appendChild(weft);
+    
+          // tiny join star
+          const join = document.createElementNS(NS, 'circle');
+          join.setAttribute('cx', x); join.setAttribute('cy', y2);
+          join.setAttribute('r', 1.8);
+          join.setAttribute('fill', 'rgba(255,255,255,.85)');
+          join.setAttribute('class','twA');
+          threadG.appendChild(join);
+        }
+      }
+    
+      // ---- optional: whispered words stitched into the sky --------
+      // Pull top 2–3 purposes & a handful of cloud words if available.
+      try{
+        const purposes = (window.state?.purposes || []).slice(0,3);
+        const extras = extractTopWordsFromCloud?.(20) || [];
+        const words = [...purposes, ...extras].slice(0, 28);
+    
+        const wordG = document.createElementNS(NS, 'g');
+        svg.appendChild(wordG);
+    
+        words.forEach((wtxt, idx)=>{
+          const tx = document.createElementNS(NS, 'text');
+          tx.textContent = String(wtxt);
+          tx.setAttribute('x', rand(0.1*w, 0.9*w));
+          tx.setAttribute('y', rand(0.15*h, 0.85*h));
+          tx.setAttribute('fill', 'rgba(210,225,255,.28)');
+          tx.setAttribute('font-size', String(rand(10, 22)));
+          tx.setAttribute('font-family', 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif');
+          tx.setAttribute('letter-spacing', '.02em');
+          tx.setAttribute('style', `text-shadow:0 0 18px rgba(140,180,255,.2)`);
+          wordG.appendChild(tx);
+        });
+      }catch(_) { /* fail quietly if cloud isn’t built yet */ }
+    }
+    
+    // Helper to read some words from your cloud if present
+    function extractTopWordsFromCloud(n=20){
+      const nodes = Array.from(document.querySelectorAll('#cloud .wc'));
+      if (!nodes.length) return [];
+      // take visually larger ones first
+      nodes.sort((a,b)=>parseFloat(b.style.fontSize||'0') - parseFloat(a.style.fontSize||'0'));
+      return nodes.slice(0,n).map(el=>el.textContent).filter(Boolean);
     }
     
     // ========================
@@ -1057,6 +1446,7 @@
       saveState(state);
       renderPurposeList();
       updateMyPurposeBanner();
+      rebuildCosmicBackground();
     }
     
     function removePurpose(i){
@@ -1099,6 +1489,7 @@
       if (!el) return;
       const arr = purposeState();
       el.textContent = arr.length ? arr.join(' • ') : '—';
+      rebuildCosmicBackground();
     }
     
     // ---------- Tasks (persist across cycles until deleted) ----------
@@ -1333,6 +1724,7 @@
         renderTaskList();       // <- ensures existing tasks appear immediately
       }
       if (id === 'page-phase-4') {
+        renderLoomBackground();
         renderCarryOver();
         renderLoose();
       }
@@ -1375,6 +1767,7 @@
         markCurrent(n);
         showPage('page-home');
         ensureMap();
+        showBetaNotice();
       }
     }
 
@@ -1535,16 +1928,17 @@
 
     // Visually mark which section is current (no hiding)
     function markCurrent(n){
-      // Add glow to the matching section
+      // highlight the matching section
       document.querySelectorAll('[data-phase]').forEach(sec=>{
         sec.classList.toggle('is-current', Number(sec.getAttribute('data-phase')) === n);
       });
-      // Show only the matching badge; hide others
-      document.querySelectorAll('[data-phase-badge]').forEach(b=>{
-        const isMatch = Number(b.getAttribute('data-phase-badge')) === n;
-        b.style.display = isMatch ? 'inline-block' : 'none';
-      });
+    
+      // hide all badges, then show only the one for this phase
+      document.querySelectorAll('[data-phase-badge]').forEach(b=> b.style.display = 'none');
+      const badge = document.querySelector(`[data-phase-badge="${n}"]`);
+      if (badge) badge.style.display = 'inline-block';
     }
+
     
     // Set phase from user action or URL hash
     function setPhase(n){
@@ -1739,17 +2133,26 @@
       hydrate();
       await loadDraft();             // NEW
       await refreshCurrentCycleUI(); // NEW
+      await rebuildCosmicBackground();
       setInterval(renderStatus, 60*1000);
     });
 
     
     window.addEventListener('hashchange', route);
 
-    
-   /* window.addEventListener('hashchange', ()=>{
-      const n = phaseFromHash();
-      if (n) setPhase(n);
-    });*/
+    // Re-render responsive backgrounds on resize
+    window.addEventListener('resize', ()=>{
+      // Phase 4 loom art
+      const p4 = document.getElementById('page-phase-4');
+      if (p4 && p4.classList.contains('active')){
+        renderLoomBackground();
+      }
+      // Cosmic words layer (full-page)
+      if (typeof rebuildCosmicBackground === 'function'){
+        rebuildCosmicBackground();
+      }
+    });
+
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js"></script>
