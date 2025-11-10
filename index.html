@@ -120,7 +120,24 @@
     
       /* Moon canvas rim */
       #moonCanvas{ background:#0b1324; border:1px solid rgba(255,255,255,.15); }
-    
+ 
+     /* PNG moon art + soft white glow */
+    .moon-art{
+      width: 7rem;              /* same visual size as your old w-28 */
+      height: 7rem;
+      display:block;
+      border-radius:9999px;     /* keeps the glow circular */
+      object-fit: cover;
+      filter:
+        drop-shadow(0 0 10px rgba(255,255,255,.85))
+        drop-shadow(0 0 36px rgba(139,184,255,.35));
+      /* optional: faint edge ring to blend transparencies */
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.12),
+        0 0 60px rgba(139,184,255,.20);
+      background: transparent;
+    }
+       
     /* Word cloud container */
     #cloud{
       display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
@@ -298,7 +315,7 @@
     <section id="status" class="card rounded-2xl p-6 shadow">
       <div class="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
         <div class="shrink-0 relative">
-          <div id="moonCanvas" class="w-28 h-28 rounded-full bg-slate-900 relative overflow-hidden"></div>
+          <img id="moonArt" alt="Moon phase" class="moon-art" src="assets/moon1.png">
           <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs text-slate-500">Today</div>
         </div>
         <div class="grid gap-2">
@@ -718,11 +735,7 @@
     function escapeHtml(str){
       // Standard-safe HTML escaping
       return String(str).replace(/[&<>"']/g, ch => ({
-        '&' : '&amp;',
-        '<' : '&lt;',
-        '>' : '&gt;',
-        '"' : '&quot;',
-        "'" : '&#39;'
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'
       }[ch]));
     }
 
@@ -1785,6 +1798,37 @@
       return new Date(now.getTime() + deltaDays * 86400000);
     }
 
+    // ===== Moon art frames (1..28) =====
+    // Place your images at assets/moon1.png ... moon28.png
+    const MOON_ART_PATH = 'assets/';
+    const MOON_ART_COUNT = 28;
+    
+    // Map phase (0..1, where 0 = new, 0.5 = full) to your index 1..28
+    function artIndexFromPhase(phase01){
+      // normalize to [0,1)
+      const p = ((phase01 % 1) + 1) % 1;
+      const half = 0.5;
+    
+      if (p <= half){
+        // New -> Full maps to 1..13
+        const t = p / half;                         // 0..1
+        return Math.max(1, Math.min(13, Math.round(1 + t * (13 - 1))));
+      } else {
+        // Full -> New maps to 13..28
+        const t = (p - half) / (1 - half);          // 0..1
+        return Math.max(13, Math.min(28, Math.round(13 + t * (28 - 13))));
+      }
+    }
+    
+    // (Optional) Preload all frames so swaps are instant
+    (function preloadMoons(){
+      const list = [];
+      for (let i=1; i<=MOON_ART_COUNT; i++){
+        const im = new Image();
+        im.src = `${MOON_ART_PATH}moon${i}.png`;
+        list.push(im);
+      }
+    })();
 
     // ========================
     // RENDER STATUS (SunCalc if present)
@@ -1853,8 +1897,14 @@
     const phaseNum = autoPhaseFromLifeStage(lifeStage);
     setPhase(phaseNum);
     
-    // Draw moon
-    drawMoon(document.getElementById('moonCanvas'), illum, waxing, phase01);
+        // Show PNG moon art
+        const artEl = document.getElementById('moonArt');
+        if (artEl){
+          const idx = artIndexFromPhase(phase01);
+          artEl.src = `${MOON_ART_PATH}moon${idx}.png`;
+          artEl.alt = `Moon art frame ${idx}`;
+        }
+
 
     }
 
