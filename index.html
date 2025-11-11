@@ -34,15 +34,6 @@
           color: var(--ink);
         }
 
-        .phase-ring {
-          --ring-rot: 0deg;
-          position: relative; width: 300px; height: 300px; margin: 0 auto;
-          border-radius: 9999px;
-          background: radial-gradient(60% 60% at 50% 50%, rgba(139,184,255,.18), transparent 70%);
-          box-shadow: inset 0 0 30px rgba(139,184,255,.18);
-          transform: rotate(var(--ring-rot));
-        }
-        .phase-ring .dot { position:absolute; transform:translate(-50%,-50%) rotate(calc(-1 * var(--ring-rot))); }
         .phase-ring .node {
           display:flex; align-items:center; gap:.5rem;
           padding:.5rem .8rem; border-radius:9999px;
@@ -55,13 +46,14 @@
           box-shadow:0 0 10px rgba(139,184,255,.65);
         }
 
-        .phase-ring { position: relative; width: 260px; height: 260px; margin: 0 auto; }
-        .phase-ring .dot { position: absolute; transform: translate(-50%, -50%); }
+        .phase-ring { position: relative; width: 260px; height: 260px; margin: 0 auto; transform: rotate(var(--ring-rot)); }
+        .phase-ring .dot { position: absolute; transform: translate(-50%, -50%) rotate(calc(-1 * var(--ring-rot))); }
         .phase-ring button {
           background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2);
           color: var(--ink); padding: .5rem .75rem; border-radius: 9999px; font-size: .8rem;
           backdrop-filter: blur(6px);
         }
+
 
       /* ===== Night-sky App Theme ===== */
       :root{
@@ -84,6 +76,10 @@
           #000 url("starry-bg.png") center/cover no-repeat;
         -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
       }
+
+        /* Let the cosmic words glow but never block clicks */
+        #cosmic-bg { pointer-events: none; }
+        #cosmic-bg .t { pointer-events: none; }
     
       .watercolor{filter:saturate(1.05) contrast(1.04)}
       .card{
@@ -328,7 +324,7 @@
             <span class="text-slate-500 text-sm">(<span id="illumPct">—</span> illuminated)</span>
           </div>
     
-          <div class="text-sm text-slate-600">Monthly Stage: <span id="lifeStage" class="font-medium">—</span></div>
+          <div class="text-sm text-slate-600">Cycle Stage: <span id="lifeStage" class="font-medium">—</span></div>
           <div class="text-sm text-slate-600">My Purpose: <span id="myPurpose">—</span></div>
           <div class="text-sm text-slate-600">Next phase: <span id="nextEvent">—</span></div>
         </div>
@@ -857,7 +853,10 @@
         : deg<225? 'Waning Gibbous'
         : deg<270? 'Last Quarter'
         : 'Waning Crescent';
-      const lifeStage = (deg>=45 && deg<180) ? 'Advance' : (deg>=175 && deg<=185) ? 'Celebrate' : (deg>185 && deg<360) ? 'Recap' : 'Wait';
+      const lifeStage = (deg < 90)  ? 'Wait'
+                 : (deg < 180) ? 'Advance'
+                 : (deg < 270) ? 'Celebrate'
+                 :               'Recap';
       const nextFull = (age<=synodic/2) ? (synodic/2-age) : (synodic-age+synodic/2);
       const nextNew  = synodic - age;
       const nextEvent = lifeStage==='Celebrate' ? `New Moon in ${nextNew.toFixed(1)} days` : `Full Moon in ${nextFull.toFixed(1)} days`;
@@ -1389,29 +1388,76 @@
     // ========================
     // PHASE 4 CARRY-OVER + LOOSE ENDS
     // ========================
+    // Flatten current Phase-2 tasks and list any that are not done
     function renderCarryOver(){
-      const ul = document.getElementById('carryOver'); ul.innerHTML='';
-      if(!state.plan){ ul.innerHTML = '<li class="text-slate-500 text-sm">No Phase 2 plan found.</li>'; return; }
-      const pending = state.plan.checklist.map((c,i)=>({i,...c})).filter(c=>!c.done);
-      if(!pending.length){ ul.innerHTML = '<li class="text-slate-500 text-sm">Nothing to carry over — you finished everything. ✨</li>'; return; }
-      pending.forEach(p=>{
+      const ul = document.getElementById('carryOver');
+      ul.innerHTML = '';
+    
+      const tasks = state.tasks || [];
+      // flatten tasks to: { id, text, done, path }
+      function walk(list, path = [], out = []){
+        for (const t of list){
+          const here = [...path, t.text];
+          out.push({ id: t.id, text: t.text, done: !!t.done, path: here });
+          if (Array.isArray(t.children) && t.children.length){
+            walk(t.children, here, out);
+          }
+        }
+        return out;
+      }
+    
+      const flat = walk(tasks);
+      const pending = flat.filter(t => !t.done);
+    
+      if (!flat.length){
+        ul.innerHTML = '<li class="text-slate-500 text-sm">No Phase 2 tasks yet.</li>';
+        return;
+      }
+      if (!pending.length){
+        ul.innerHTML = '<li class="text-slate-500 text-sm">Nothing to carry over — you finished everything. ✨</li>';
+        return;
+      }
+    
+      pending.forEach(t=>{
         const li = document.createElement('li');
-        li.innerHTML = `<label class="flex items-center gap-2"><input type="checkbox" data-carry-index="${p.i}"/> <span>${escapeHtml(p.text)}</span></label>`;
+        const crumb = t.path.join(' › ');
+        li.innerHTML =
+          `<label class="flex items-center gap-2">
+             <input type="checkbox" data-carry-id="${t.id}"/>
+             <span>${escapeHtml(crumb)}</span>
+           </label>`;
         ul.appendChild(li);
       });
     }
+    
     function carrySelected(){
-      const boxes = [...document.querySelectorAll('[data-carry-index]')].filter(b=>b.checked);
-      if(!boxes.length) return;
+      const boxes = [...document.querySelectorAll('[data-carry-id]')].filter(b => b.checked);
+      if (!boxes.length) return;
+    
+      // lookup by id across nested tasks
+      function findById(id, list = state.tasks || []){
+        for (const t of list){
+          if (t.id === id) return t;
+          const hit = findById(id, t.children || []);
+          if (hit) return hit;
+        }
+        return null;
+      }
+    
       state.nextCycle = state.nextCycle || { checklist: [], loose: [] };
+    
       boxes.forEach(b=>{
-        const i = +b.getAttribute('data-carry-index');
-        const item = state.plan.checklist[i];
-        state.nextCycle.checklist.push({text:item.text, done:false, from:'phase2'});
+        const id = b.getAttribute('data-carry-id');
+        const t = findById(id);
+        if (t){
+          state.nextCycle.checklist.push({ text: t.text, done: false, from: 'phase2' });
+        }
       });
+    
       saveState(state);
       alert('Added to next cycle.');
     }
+
     // Loose ends
     function addLoose(){
       const v = document.getElementById('looseInput').value.trim(); if(!v) return;
@@ -1757,10 +1803,11 @@
         if (window.SunCalc){
           const m = SunCalc.getMoonIllumination(now);
           const deg = m.phase * 360;
-          const lifeStage = (deg>=45&&deg<180)?'Advance'
-            : (deg>=175&&deg<=185)?'Celebrate'
-            : (deg>185&&deg<360)?'Recap' : 'Wait';
-          return autoPhaseFromLifeStage(lifeStage);
+          const ls = (deg < 90)  ? 'Wait'
+                   : (deg < 180) ? 'Advance'
+                   : (deg < 270) ? 'Celebrate'
+                   :               'Recap';
+          return autoPhaseFromLifeStage(ls);
         } else {
           return autoPhaseFromLifeStage(moonPhase(now).lifeStage);
         }
@@ -1783,6 +1830,7 @@
         rotateRingForPhase(n);
         markCurrent(n);
         showPage('page-home');
+        updateMyPurposeBanner();   // ← refresh the banner on Home
         ensureMap();
         showBetaNotice();
       }
@@ -1841,36 +1889,38 @@
       const now = new Date();
       let illum, phaseName, lifeStage, nextEvent, waxing, phase01;
     
-      if (window.SunCalc){
-        const m = SunCalc.getMoonIllumination(now);    // m.fraction (0..1), m.phase (0..1)
-        phase01 = m.phase; // 0=new, .25=first quarter, .5=full, .75=last quarter
-        illum = m.fraction;
-        const deg = m.phase * 360;
+    if (window.SunCalc){
+      const m = SunCalc.getMoonIllumination(now);    // m.fraction (0..1), m.phase (0..1)
+      phase01 = m.phase;                              // 0=new, .25=first, .5=full, .75=last
+      illum   = m.fraction;
+      const deg = phase01 * 360;
     
-        // NEW: waxing/waning flag from SunCalc (0..0.5 = waxing, 0.5..1 = waning)
-        waxing = (m.phase < 0.5);
+      // Phase name (compact, correct windows)
+      if (Math.abs(deg -   0) < 1.5 || Math.abs(deg - 360) < 1.5)      phaseName = 'New Moon';
+      else if (deg <  45)  phaseName = 'Waxing Crescent';
+      else if (deg <  90)  phaseName = 'First Quarter';
+      else if (deg < 135)  phaseName = 'Waxing Gibbous';
+      else if (deg < 225)  phaseName = 'Waning Gibbous';
+      else if (deg < 270)  phaseName = 'Last Quarter';
+      else if (deg < 315)  phaseName = 'Waning Crescent';
+      else                 phaseName = 'New Moon';
     
-        // Labels
-        phaseName = (deg<1||deg>=359)?'New Moon'
-          : deg<45?'Waxing Crescent'
-          : deg<90?'First Quarter'
-          : deg<135?'Waxing Gibbous'
-          : deg<181?'Full Moon'
-          : deg<225?'Waning Gibbous'
-          : deg<270?'Last Quarter'
-          : 'Waning Crescent';
+      // Life stage by degrees so labels + stage agree at quarter boundaries
+      lifeStage =
+        (deg <  90) ? 'Wait'    :
+        (deg < 180) ? 'Advance' :
+        (deg < 270) ? 'Celebrate' :
+                      'Recap';
     
-        lifeStage = (deg>=45&&deg<180)?'Advance'
-          : (deg>=175&&deg<=185)?'Celebrate'
-          : (deg>185&&deg<360)?'Recap'
-          : 'Wait';
+      // Waxing/waning flag
+      waxing = (phase01 < 0.5);
     
-        const days = daysUntilNextQuarter(m.phase);
-        const when = nextQuarterDate(m.phase, now);
-        nextEvent = `${fmtDate(when)}  (in ${days.toFixed(1)} days)`;
+      // Next event
+      const days = daysUntilNextQuarter(phase01);
+      const when = nextQuarterDate(phase01, now);
+      nextEvent  = `${fmtDate(when)}  (in ${days.toFixed(1)} days)`;
+    }
 
-    
-      } 
     else {
       const info = moonPhase(now);
       ({ illum, phaseName, lifeStage } = info);
@@ -1952,7 +2002,8 @@
       // Remember choice
       state.activePhase = n; saveState(state);
     }
-    
+ 
+ /*   
     function autoPhaseFromLifeStage(lifeStage){
       // Map your life stages → 1..4
       if (lifeStage === 'Wait') return 1;
@@ -1961,7 +2012,7 @@
       if (lifeStage === 'Recap') return 4;
       return 1;
     }
-
+*/
 
     // Map life stage -> phase number (we already used this idea)
     function autoPhaseFromLifeStage(lifeStage){
@@ -1977,8 +2028,14 @@
       // New base: 2→top (0deg), 3→-90deg, 4→-180deg, 1→-270deg
       const angles = { 1: -270, 2: 0, 3: -90, 4: -180 };
       const angle = angles[n] ?? 0;
+    
+      // Set on :root (global fallback)…
       document.documentElement.style.setProperty('--ring-rot', angle + 'deg');
+      // …and directly on the ring (in case of future scoping)
+      const ring = document.querySelector('.phase-ring');
+      if (ring) ring.style.setProperty('--ring-rot', angle + 'deg');
     }
+
 
     // Visually mark which section is current (no hiding)
     function markCurrent(n){
