@@ -520,11 +520,14 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
           ["wallacea","Wallacea (Sulawesi, Maluku, Timor — Asia-Pacific bridge)"]
         ]
       },
-      "oceania-west": {
-        name: "Oceania & Pacific (West)",
-        box: [110, 180, -25, 20 ],
+      "oceania": {
+        name: "Oceania & Pacific",
+        // Use the western half for the focused region map;
+        // the world map already handles the dateline split.
+        box: [110, 180, -25, 20],
         subs: [
           ["polynesia","Polynesia (Hawai‘i, Samoa, Tonga, Tahiti, Rapa Nui, etc.)"],
+          ["east-pacific","Eastern Pacific Archipelagos (extended Polynesian sphere)"],
           ["micronesia","Micronesia"],
           ["png-highlands","PNG Highlands"],
           ["png-low-solomon","PNG Lowlands & Solomon Islands"],
@@ -534,13 +537,6 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
           ["se-australia","Southeastern / Temperate Australia"],
           ["aotearoa","Aotearoa (Māori)"],
           ["philippines-island-sea","Philippines / Island SE Asia (Austronesian)"]
-        ]
-      },
-      "oceania-east": {
-        name: "Oceania & Pacific (East)",
-        box: [-180,-140,-25, 15],
-        subs: [
-          ["east-pacific","Eastern Pacific Archipelagos (extended Polynesian sphere)"]
         ]
       }
     };
@@ -6688,8 +6684,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
           "ssa":             "sub_saharan_africa.png",
           "asia-temperate":  "asia_temperate.png",
           "asia-monsoon":    "asia_monsoon.png",
-          "oceania-west":    "oceania_west.png",
-          "oceania-east":    "oceania_east.png"
+          "oceania":         "oceania.png"
       };
 
       const heroWrap = document.getElementById('regionHeroWrap');
@@ -6847,25 +6842,26 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
 
     // ------- Intro modal logic ------- 
     function initIntroModal(){
-      const modal = document.getElementById('mapIntroModal');
-      const btn   = document.getElementById('mapIntroButton');
-      if (!modal || !btn) return;
+          const modal = document.getElementById('mapIntroModal');
+          const btn   = document.getElementById('mapIntroButton');
+          if (!modal || !btn) return;
 
-      // Only show once per browser (can reset by clearing site data)
-      const dismissed = localStorage.getItem('moonMapIntroDismissed');
-      if (dismissed === 'yes'){
-        modal.style.display = 'none';
-        return;
-      }
+          // Only show once per browser (can reset by clearing site data)
+          // NOTE: v2 key so it will show once even if the old key exists
+          const dismissed = localStorage.getItem('moonMapIntroDismissed_v2');
+          if (dismissed === 'yes'){
+            modal.style.display = 'none';
+            return;
+          }
 
-      modal.style.display = 'flex';
+          modal.style.display = 'flex';
 
-      btn.addEventListener('click', ()=>{
-        modal.style.opacity = '0';
-        modal.style.pointerEvents = 'none';
-        localStorage.setItem('moonMapIntroDismissed','yes');
-        setTimeout(()=>{ modal.style.display = 'none'; }, 260);
-      });
+          btn.addEventListener('click', ()=>{
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+            localStorage.setItem('moonMapIntroDismissed_v2','yes');
+            setTimeout(()=>{ modal.style.display = 'none'; }, 260);
+          });
     }
 
     // ------- Router entrypoint -------
