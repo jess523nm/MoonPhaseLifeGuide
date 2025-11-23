@@ -6616,15 +6616,17 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
       const heroNote = document.getElementById('regionHeroNote');
 
       const heroFile = REGION_HERO[slug];
-      if (heroFile) {
-        heroImg.src = `assets/submaps/${heroFile}`;
-        heroImg.alt = `${entry.name} region artwork`;
-        heroWrap.style.display = 'flex';
-        heroNote.textContent = "Custom regional art — replace anytime (assets/…).";
-      } else {
-        // hide if we don't have an image yet
-        heroWrap.style.display = 'none';
-      }
+        if (heroFile) {
+          // use RELATIVE path so it works on GitHub Pages under /MoonPhaseLifeGuide/
+          heroImg.src = `assets/submaps/${heroFile}`;
+          heroImg.alt = `${entry.name} region artwork`;
+          heroWrap.style.display = 'flex';
+          heroNote.textContent = "Custom regional art — replace anytime (assets/…).";
+        }
+        else {
+            // hide if we don't have an image yet
+            heroWrap.style.display = 'none';
+        }
     
       const svg = d3.select("#regionMap");
       svg.selectAll("*").remove();
