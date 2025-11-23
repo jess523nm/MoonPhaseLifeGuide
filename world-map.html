@@ -145,7 +145,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
         <div class="subcard">
           <h2 id="subTitle" class="subh2">Sub-region</h2>
             <div class="subhero-wrap">
-              <!-- Name your images exactly as I output in JS: /assets/submaps/{subSlug}.png (or .svg) -->
+              <!-- Name your images exactly as I output in JS: /assets/submaps/{subSlug}-->
               <img id="subHero" class="subhero" alt="Sub-region artwork" src="">
               <div id="subNote" class="subdim" style="margin-top:8px"></div>
             </div>
@@ -6617,7 +6617,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
 
       const heroFile = REGION_HERO[slug];
       if (heroFile) {
-        heroImg.src = `/assets/submaps/${heroFile}`;
+        heroImg.src = `assets/submaps/${heroFile}`;
         heroImg.alt = `${entry.name} region artwork`;
         heroWrap.style.display = 'flex';
         heroNote.textContent = "Custom regional art — replace anytime (assets/…).";
@@ -6682,7 +6682,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
       const noteEl = document.getElementById('subNote');
       const meta = SUB_CONTENT[subSlug] || {};
       const heroName = meta.heroName || `submap-${subSlug}.png`;
-      heroEl.src = `/assets/submaps/${heroName}`;
+      heroEl.src = `assets/submaps/${heroName}`;
       heroEl.alt = `${title} sub-map artwork`;
       noteEl.textContent = meta.note || "Add a custom image to /assets/submaps and refine text anytime.";
     
