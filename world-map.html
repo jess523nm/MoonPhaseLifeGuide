@@ -82,10 +82,91 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
     @media (max-width:820px){
       .subgrid{ grid-template-columns: 1fr; }
     }
+    @media (max-width:820px){
+      .subgrid{ grid-template-columns: 1fr; }
+    }
+
+    /* --- Intro modal styles --- */
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(3,6,20,.92);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      opacity:1;
+      transition:opacity .25s ease;
+    }
+    .modal-card{
+      max-width:760px;
+      max-height:80vh;
+      overflow-y:auto;
+      padding:20px 24px 18px;
+      border-radius:18px;
+      background:rgba(15,23,42,.96);
+      border:1px solid rgba(148,163,184,.7);
+      box-shadow:0 18px 60px rgba(15,23,42,.9);
+    }
+    .modal-body{
+      margin-top:6px;
+      font-size:14px;
+      line-height:1.55;
+      color:#e2e8f0;
+    }
+    .modal-body p{
+      margin:0 0 10px;
+    }
+    .modal-button{
+      margin-top:12px;
+      padding:8px 16px;
+      border-radius:999px;
+      border:1px solid rgba(96,165,250,.9);
+      background:linear-gradient(135deg,#1d4ed8,#22c55e);
+      color:#e5ecff;
+      font-size:14px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .modal-button:hover{
+      filter:brightness(1.05);
+    }
 
   </style>
 </head>
 <body>
+<body>
+
+    <!-- Intro modal shown when the map first opens -->
+    <div id="mapIntroModal" class="modal-overlay">
+      <div class="modal-card">
+        <h2 style="margin:0 0 8px;">Before You Enter the Map</h2>
+        <div class="modal-body">
+          <p>We are all descendants of global Indigenous societies. That is true for every human being on this earth. For that reason, these traditions are intended for all of us. The knowledge of our ancestors is our birthright, stolen or disrupted by the destruction bred from centuries of colonization and globalization. The intent of these maps is not to appropriate any traditions or claim precise expert knowledge, but rather to offer a starting point for users to get back in touch with their own ancestral traditions.</p>
+
+          <p>For most of human history, people lived in rhythm with the sky, the land, the water, and the cycles of food and seasons. Every culture had its own ways of naming and remembering those rhythms through the phases of the moons, stars, rains, migrations, and harvests. Colonization, industrialization, and assimilation tore many of those threads away, and often created a narrative of violence, a pernicious whispering that such knowledge was “primitive” or unimportant.</p>
+
+          <p>The truth is that for thousands of years, humanity has lived, by and large, in time-tested ways. When we see our current industrial lifestyle as just a brief moment on that longer timeline, it becomes clear that our modern ways of living and moving through the world are one vast, largely untested experiment.</p>
+
+          <p>At a time when depression, anxiety, and feelings of powerlessness are plaguing our world more and more, it’s essential to remember that this heritage belongs to us all—a collective birthright that was interrupted, fragmented, and sometimes stolen, but one that we still have the chance to reclaim and breathe life into once more.</p>
+
+          <p>This work is both an act of reclamation and of solidarity. These traditions were ours, are still ours, and can still be reclaimed for ourselves and for generations to come.</p>
+
+          <p style="margin-top:10px;font-style:italic;">“This land was ours once, and is, and will be again.” — Gloria Anzaldúa</p>
+
+          <p style="margin-top:14px;font-size:0.9em;opacity:0.9;">
+            <strong>Beta disclaimer:</strong> This version of the map is a highly preliminary overview of research into Indigenous moon-phase traditions. It is not exhaustive, and not every community will see themselves reflected accurately here. Please follow up with your own research, prioritize community-authored sources, and use this app as a starting point only.
+          </p>
+        </div>
+
+        <button id="mapIntroButton" class="modal-button">
+          I understand — enter the map
+        </button>
+      </div>
+    </div>
+
     <!-- Back link to main Moon Phase app -->
     <div style="padding:16px">
       <a href="index.html"
@@ -6764,7 +6845,29 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
       document.getElementById('backWorld2').onclick = (e)=>{ e.preventDefault(); navigateTo(`?`); };
     }
 
-    
+    // ------- Intro modal logic ------- 
+    function initIntroModal(){
+      const modal = document.getElementById('mapIntroModal');
+      const btn   = document.getElementById('mapIntroButton');
+      if (!modal || !btn) return;
+
+      // Only show once per browser (can reset by clearing site data)
+      const dismissed = localStorage.getItem('moonMapIntroDismissed');
+      if (dismissed === 'yes'){
+        modal.style.display = 'none';
+        return;
+      }
+
+      modal.style.display = 'flex';
+
+      btn.addEventListener('click', ()=>{
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
+        localStorage.setItem('moonMapIntroDismissed','yes');
+        setTimeout(()=>{ modal.style.display = 'none'; }, 260);
+      });
+    }
+
     // ------- Router entrypoint -------
     function route(){
       const view = (getParam("view") || "world").toLowerCase();
@@ -6785,6 +6888,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
     document.addEventListener('DOMContentLoaded', ()=>{
       renderWorldMap(); // draw the world map
       route();          // swap to region/sub if the URL has view=...
+      initIntroModal(); // show the ancestry/solidarity popup
     });
 
   // === COPY UP TO THIS LINE (END ANCHOR) ====================================
