@@ -36,9 +36,9 @@
 
         .phase-ring {
           position: relative;
-          width: 280px;
-          height: 280px;
-          margin: 0 auto;
+          width: 320px;          /* a bit bigger circle */
+          height: 320px;
+          margin: 1.75rem auto 1.5rem;  /* pushes ring down from title + up from caption */
           transform: rotate(var(--ring-rot));
         }
 
@@ -377,7 +377,7 @@
           <!-- TOP = Phase 2 (Advance Purpose — moon7) -->
           <div class="dot" style="left:50%; top:6%;">
             <button class="node" onclick="goPhase(2)">
-              <img src="assets/moon7.png" alt="Advance Purpose moon">
+              <img src="/assets/moon7.png" alt="Advance Purpose moon">
               <div class="flex flex-col">
                 <span class="label-kicker">Phase 2</span>
                 <span class="label-main">Advance Purpose</span>
@@ -388,7 +388,7 @@
           <!-- RIGHT = Phase 3 (Give Thanks — moon14) -->
           <div class="dot" style="left:94%; top:50%;">
             <button class="node" onclick="goPhase(3)">
-              <img src="assets/moon14.png" alt="Give Thanks moon">
+              <img src="/assets/moon14.png" alt="Give Thanks moon">
               <div class="flex flex-col">
                 <span class="label-kicker">Phase 3</span>
                 <span class="label-main">Give Thanks</span>
@@ -399,7 +399,7 @@
           <!-- BOTTOM = Phase 4 (Recapitulate — moon22) -->
           <div class="dot" style="left:50%; top:94%;">
             <button class="node" onclick="goPhase(4)">
-              <img src="assets/moon22.png" alt="Recapitulate moon">
+              <img src="/assets/moon22.png" alt="Recapitulate moon">
               <div class="flex flex-col">
                 <span class="label-kicker">Phase 4</span>
                 <span class="label-main">Recapitulate</span>
@@ -410,7 +410,7 @@
           <!-- LEFT = Phase 1 (Wait for Purpose — moon1) -->
           <div class="dot" style="left:6%; top:50%;">
             <button class="node" onclick="goPhase(1)">
-              <img src="assets/moon1.png" alt="Wait for Purpose moon">
+              <img src="/assets/moon1.png" alt="Wait for Purpose moon">
               <div class="flex flex-col">
                 <span class="label-kicker">Phase 1</span>
                 <span class="label-main">Wait for Purpose</span>
