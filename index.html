@@ -35,10 +35,20 @@
         }
 
         .phase-ring .node {
-          display:flex; align-items:center; gap:.5rem;
-          padding:.5rem .8rem; border-radius:9999px;
-          background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2);
-          backdrop-filter: blur(6px); font-size:.85rem;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          gap:.35rem;
+          width:120px;
+          height:120px;
+          padding:.6rem;
+          border-radius:9999px;
+          text-align:center;
+          background:rgba(255,255,255,.08);
+          border:1px solid rgba(255,255,255,.2);
+          backdrop-filter: blur(6px);
+          font-size:.85rem;
         }
         .phase-ring .pip {
           width:.6rem; height:.6rem; border-radius:9999px;
@@ -346,7 +356,7 @@
           <div class="dot" style="left:50%; top:6%;">
             <button class="node" onclick="goPhase(2)">
               <span class="pip"></span>
-              <div class="flex flex-col items-start">
+              <div class="flex flex-col items-center">
                 <span class="text-xs uppercase tracking-wide opacity-80">Phase 2</span>
                 <span class="font-medium">Advance Purpose</span>
               </div>
@@ -357,7 +367,7 @@
           <div class="dot" style="left:94%; top:50%;">
             <button class="node" onclick="goPhase(3)">
               <span class="pip"></span>
-              <div class="flex flex-col items-start">
+              <div class="flex flex-col items-center">
                 <span class="text-xs uppercase tracking-wide opacity-80">Phase 3</span>
                 <span class="font-medium">Give Thanks</span>
               </div>
@@ -368,7 +378,7 @@
           <div class="dot" style="left:50%; top:94%;">
             <button class="node" onclick="goPhase(4)">
               <span class="pip"></span>
-              <div class="flex flex-col items-start">
+              <div class="flex flex-col items-center">
                 <span class="text-xs uppercase tracking-wide opacity-80">Phase 4</span>
                 <span class="font-medium">Recapitulate</span>
               </div>
@@ -379,7 +389,7 @@
           <div class="dot" style="left:6%; top:50%;">
             <button class="node" onclick="goPhase(1)">
               <span class="pip"></span>
-              <div class="flex flex-col items-start">
+              <div class="flex flex-col items-center">
                 <span class="text-xs uppercase tracking-wide opacity-80">Phase 1</span>
                 <span class="font-medium">Wait for Purpose</span>
               </div>
@@ -1808,12 +1818,12 @@
       } catch(e){ return 1; }
     }
     
-    function route(){
+function route(){
       const m = (location.hash||'').match(/^#\/phase\/([1-4])$/);
       if (m){
         const n = parseInt(m[1],10);
-        state.activePhase = n; saveState(state);
-        rotateRingForPhase(n);
+        // Keep the ring pinned to the real lunar phase.
+        // Only highlight which phase page you're viewing.
         markCurrent(n);
         showPage('page-phase-' + n);
       } else if ((location.hash||'') === '#/history'){
