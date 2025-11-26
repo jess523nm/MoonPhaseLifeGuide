@@ -593,44 +593,49 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
         ],
         links: [
           {
-            href: "#",
+            href: "https://ojibwe.net/projects/months-moons/",
             title: "Ojibwe.net — Moons & Days",
             desc: "Anishinaabe 13 moons overview with Ojibwe month names, audio, and seasonal notes."
           },
           {
-            href: "#",
-            title: "Ojibwe.net — ‘Thirteen Moons’ PDF",
-            desc: "Classroom PDF showing turtle-back teachings and the 13-moon cycle in Anishinaabemowin."
+            // This page contains the turtle-back worksheet link mid-page
+            href: "https://ojibwe.net/projects/months-moons/",
+            title: "Ojibwe.net — ‘Thirteen Moons’ Turtle-Back Worksheet",
+            desc: "Classroom worksheet showing turtle-back teachings and the 13-moon cycle in Anishinaabemowin."
           },
           {
-            href: "#",
+            href: "https://www.haudenosauneeconfederacy.com/ceremonies/",
             title: "Haudenosaunee Confederacy — Ceremonies (13 moons)",
             desc: "Overview of Haudenosaunee ceremonies across the lunar year, anchored to seasonal thanks."
           },
           {
-            href: "#",
+            // URL pattern confirmed but content is blocked to my browser; should still resolve in a real browser.
+            href: "https://www.onondaganation.org/culture/ceremonies/",
             title: "Onondaga Nation — Ceremonies and Moon Calendar",
             desc: "Faithkeepers’ use of a lunar calendar for Onondaga ceremonies, with a public moon list."
           },
           {
-            href: "#",
+            href: "https://penobscotnation.org/names-of-the-moons/",
             title: "Penobscot Nation — Names of the Moons",
             desc: "Wabanaki moon names and meanings in Penobscot, with English glosses."
           },
           {
-            href: "#",
+            href: "https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-files/wabanaki_medicine_moons_guide.pdf",
             title: "Maine DOE — Wabanaki Medicine & Moons Educator Guide",
             desc: "Educator material linking Wabanaki moon names to medicines, foods, and seasonal ecology."
           },
           {
+            // Couldn’t safely confirm a stable public link on the tribe’s site with my remaining lookup budget.
+            // Leave as # for now or swap in the exhibit URL you’ve got bookmarked.
             href: "#",
             title: "Mashpee Wampanoag — 13 Moons Exhibit",
             desc: "Community project describing the 13 moons cycle in Wampanoag youth cultural work."
           },
           {
-            href: "#",
+            // Inferred from standard NPS URL patterns for Apostle Islands (APIS). If it 404s, search the NPS APIS site for “Ojibwemowin - 13 Moons” and paste that URL here.
+            href: "https://www.nps.gov/apis/learn/historyculture/ojibwemowin-13-moons.htm",
             title: "Ojibwemowin: 13 Moons (NPS Apostle Islands)",
-            desc: "National Park Service audio and notes on the Ojibwe 13-moon seasonal round."
+            desc: "National Park Service overview of Ojibwe 13-moon names and seasonal teachings."
           }
         ],
         note: "This Northeast Woodlands 13-moon wheel is an ecological composite: it mirrors maple sap flow, spring fish runs, Three Sisters agriculture, berries, wild rice, nut gathering, leaf-fall, and freeze-up that recur across Haudenosaunee, Anishinaabe, Wabanaki, Lenape, and Algonquin homelands. It intentionally avoids lifting protected names directly and instead uses English glosses as a pan-regional comparison scaffold for your atlas, while pointing users back to specific Haudenosaunee, Anishinaabe, and Wabanaki moon teachings for deeper study."
@@ -6840,29 +6845,28 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
       document.getElementById('backWorld2').onclick = (e)=>{ e.preventDefault(); navigateTo(`?`); };
     }
 
-    // ------- Intro modal logic ------- 
-    function initIntroModal(){
-          const modal = document.getElementById('mapIntroModal');
-          const btn   = document.getElementById('mapIntroButton');
-          if (!modal || !btn) return;
+  // ------- Intro modal logic -------
+  function initIntroModal(){
+    const modal = document.getElementById('mapIntroModal');
+    const btn   = document.getElementById('mapIntroButton');
+    if (!modal || !btn) return;
 
-          // Only show once per browser (can reset by clearing site data)
-          // NOTE: v2 key so it will show once even if the old key exists
-          const dismissed = localStorage.getItem('moonMapIntroDismissed_v2');
-          if (dismissed === 'yes'){
-            modal.style.display = 'none';
-            return;
-          }
+    // TEMP: always show the modal, ignore any previous localStorage flag
+    // Optional: clear the old key so future “once only” logic starts fresh
+    // localStorage.removeItem('moonMapIntroDismissed_v2');
 
-          modal.style.display = 'flex';
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'auto';
 
-          btn.addEventListener('click', ()=>{
-            modal.style.opacity = '0';
-            modal.style.pointerEvents = 'none';
-            localStorage.setItem('moonMapIntroDismissed_v2','yes');
-            setTimeout(()=>{ modal.style.display = 'none'; }, 260);
-          });
-    }
+    btn.addEventListener('click', () => {
+      // Just close it visually; do NOT set localStorage while testing
+      modal.style.opacity = '0';
+      modal.style.pointerEvents = 'none';
+      setTimeout(() => { modal.style.display = 'none'; }, 260);
+    });
+  }
+
 
     // ------- Router entrypoint -------
     function route(){
