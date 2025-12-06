@@ -151,7 +151,7 @@
  
      /* PNG moon art + soft white glow */
     .moon-art{
-      width: 7rem;              /* same visual size as your old w-28 */
+      width: 7rem;              /* same visual size as old w-28 */
       height: 7rem;
       display:block;
       border-radius:9999px;     /* keeps the glow circular */
@@ -223,7 +223,7 @@
     /* Word-cloud stage */
     #cloud{
       position: relative;
-      height: 420px;                /* adjust if you want taller */
+      height: 420px;
       overflow: hidden;
       border-radius: 1rem;
       background:
@@ -311,11 +311,11 @@
         #page-phase-4 { position: relative; overflow: clip; }
         #loomBG{
           position:absolute; inset:0;
-          z-index:0;                /* keeps it behind your cards */
+          z-index:0;
           pointer-events:none;
           opacity: .9;              /* overall softness */
         }
-        .phase4-foreground { position: relative; z-index:1; } /* add to your content wrapper if needed */
+        .phase4-foreground { position: relative; z-index:1; } /* add to content wrapper if needed */
         
         /* optional: slightly tighten the card contrast on this page */
         #page-phase-4 .card{ box-shadow: inset 0 0 60px rgba(139,184,255,.10); }
@@ -807,7 +807,7 @@
       topWords.forEach(w => put(w, 'C'));
     }
     
-    // simple keyword extractor (syncs with your word-cloud approach)
+    // simple keyword extractor (syncs with word-cloud approach)
     function topJournalWords(text, n=30){
       const stop = new Set([
         'the','and','a','an','to','of','in','for','on','with','it','is','that','this',
@@ -1156,7 +1156,7 @@
         });
       }
     
-      // cloud from ALL entries (reuse your existing builder)
+      // cloud from ALL entries (reuse existing builder)
       const textAll = entries.map(e=>e.text).join(' ');
       buildWordCloudFromText(textAll, 230);
     }
@@ -1223,7 +1223,7 @@
       a.download=`moon-cycle-${cycle.id}.json`; a.click(); URL.revokeObjectURL(a.href);
     }
     
-    // Temporary input swap to reuse your buildWordCloud()
+    // Temporary input swap to reuse buildWordCloud()
     function buildWordCloudFromText(allText, total){
       const ta = document.getElementById('journalInput');
       if (!ta) return;
@@ -1402,7 +1402,7 @@
       }catch(_) { /* fail quietly if cloud isn’t built yet */ }
     }
     
-    // Helper to read some words from your cloud if present
+    // Helper to read some words from cloud if present
     function extractTopWordsFromCloud(n=20){
       const nodes = Array.from(document.querySelectorAll('#cloud .wc'));
       if (!nodes.length) return [];
@@ -1697,7 +1697,7 @@
       if (!inp) return;
       const v = (inp.value || '').trim();
       if (!v) return;
-      taskAdd(v, parentId);  // uses your existing taskAdd(text, parentId)
+      taskAdd(v, parentId);
       inp.value = '';
     }
     
@@ -1881,11 +1881,11 @@ function route(){
     }
 
     // ===== Moon art frames (1..28) =====
-    // Place your images at assets/moon1.png ... moon28.png
+    // Place images at assets/moon1.png ... moon28.png
     const MOON_ART_PATH = 'assets/';
     const MOON_ART_COUNT = 28;
     
-    // Map phase (0..1, where 0 = new, 0.5 = full) to your index 1..28
+    // Map phase (0..1, where 0 = new, 0.5 = full) to index 1..28
     function artIndexFromPhase(phase01){
       // normalize to [0,1)
       const p = ((phase01 % 1) + 1) % 1;
@@ -1959,7 +1959,7 @@ function route(){
       phase01 = illum;                       // symmetric base
       if (lifeStage === 'Recap') phase01 = 1 - illum;  // flip on waning side
     
-      // (your existing nextEvent code continues…)
+      // (existing nextEvent code continues…)
       let approxPhase = phase01;
       const days = daysUntilNextQuarter(approxPhase);
       const when = nextQuarterDate(approxPhase, now);
@@ -2035,7 +2035,7 @@ function route(){
  
  /*   
     function autoPhaseFromLifeStage(lifeStage){
-      // Map your life stages → 1..4
+      // Map life stages → 1..4
       if (lifeStage === 'Wait') return 1;
       if (lifeStage === 'Advance') return 2;
       if (lifeStage === 'Celebrate') return 3;
@@ -2190,7 +2190,7 @@ function setPhase(n){
       const colors = ["#8BB8FF","#9FE0D4","#F7C07B","#E59BCC","#9AD07A",
                       "#F18F8B","#C7B7FF","#FFD08A","#8BC6C6","#A5B4FC"];
                       
-        // Replace your boxPoly with this:
+        // Replace boxPoly with this:
         function boxPoly([lonMin, lonMax, latMin, latMax]){
           const eps = 1e-6;
         

@@ -10,7 +10,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Moon Guide — Map Demo</title>
   <style>
-    /* === COPY THIS BLOCK BACK INTO YOUR <style> (see anchor below) === */
+    /* === COPY THIS BLOCK BACK INTO <style> (see anchor below) === */
     .map-water   { fill:#0e1830; }
     .map-land    { fill:rgba(255,255,255,.14); }
     .map-lines   { stroke:rgba(231,238,255,.28); stroke-width:.6; fill:none; }
@@ -222,11 +222,11 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
       </div>
     
       <div class="subgrid">
-        <!-- LEFT: custom sub-map art (your SVG/PNG) -->
+        <!-- LEFT: custom sub-map art ( SVG/PNG) -->
         <div class="subcard">
           <h2 id="subTitle" class="subh2">Sub-region</h2>
             <div class="subhero-wrap">
-              <!-- Name your images exactly as I output in JS: /assets/submaps/{subSlug}-->
+              <!-- Name images exactly as output in JS: /assets/submaps/{subSlug}-->
               <img id="subHero" class="subhero" alt="Sub-region artwork" src="">
               <div id="subNote" class="subdim" style="margin-top:8px"></div>
             </div>
@@ -252,13 +252,12 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
     </div>
 
 
-  <!-- === COPY THESE THREE TAGS INTO YOUR APP HEAD (if not already present) === -->
+  <!-- === COPY THESE THREE TAGS INTO APP HEAD (if not already present) === -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@4"></script>
 
   <script>
-  // === COPY FROM THIS LINE (START ANCHOR) ===================================
   // ---- World map (Gall–Peters/Equal-area) ----
   async function renderWorldMap(){
     const svg = d3.select("#worldMap");
@@ -311,7 +310,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
     }
 
     const regions = [
-      { id:1, slug:"north-america",  name:"North America",                        box:[-170,-50, 10, 75] },
+      { id:1, slug:"north-america",  name:"North America",                        box:[-170,-50, 25, 75] },
       { id:2, slug:"meso-caribbean", name:"Mesoamerica & Caribbean",              box:[-105,-60,  5, 25] },
       { id:3, slug:"south-america",  name:"South America",                        box:[ -82,-35,-56, 13] },
       { id:4, slug:"europe",         name:"Europe",                               box:[ -12,  60, 35, 72] },
@@ -552,7 +551,6 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
       "central-mex-highlands": [-104,-96, 18, 22],
       "maya-lowlands": [-92,-86, 16, 21],
       "maya-highlands": [-93,-90, 14, 17.5]
-      // add more as you go
     };
 
     // ------- Per-subregion content (grow this over time) -------
@@ -625,8 +623,6 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Educator material linking Wabanaki moon names to medicines, foods, and seasonal ecology."
           },
           {
-            // Couldn’t safely confirm a stable public link on the tribe’s site with my remaining lookup budget.
-            // Leave as # for now or swap in the exhibit URL you’ve got bookmarked.
             href: "#",
             title: "Mashpee Wampanoag — 13 Moons Exhibit",
             desc: "Community project describing the 13 moons cycle in Wampanoag youth cultural work."
@@ -638,7 +634,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "National Park Service overview of Ojibwe 13-moon names and seasonal teachings."
           }
         ],
-        note: "This Northeast Woodlands 13-moon wheel is an ecological composite: it mirrors maple sap flow, spring fish runs, Three Sisters agriculture, berries, wild rice, nut gathering, leaf-fall, and freeze-up that recur across Haudenosaunee, Anishinaabe, Wabanaki, Lenape, and Algonquin homelands. It intentionally avoids lifting protected names directly and instead uses English glosses as a pan-regional comparison scaffold for your atlas, while pointing users back to specific Haudenosaunee, Anishinaabe, and Wabanaki moon teachings for deeper study."
+        note: "This Northeast Woodlands 13-moon wheel is an ecological composite: it mirrors maple sap flow, spring fish runs, Three Sisters agriculture, berries, wild rice, nut gathering, leaf-fall, and freeze-up that recur across Haudenosaunee, Anishinaabe, Wabanaki, Lenape, and Algonquin homelands. It intentionally avoids lifting protected names directly and instead uses English glosses as a pan-regional comparison scaffold for the atlas, while pointing users back to specific Haudenosaunee, Anishinaabe, and Wabanaki moon teachings for deeper study."
       },
 
       "se-woodlands": {
@@ -852,7 +848,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Treaty Tribes glossary explaining that many Yakama month terms were developed in relation to the Gregorian calendar while seasonal living remains rooted in foods and runs."
           }
         ],
-        note: "The Great Basin / Plateau entry uses Shoshone, Uintah Ute, and Bannock month glosses as a backbone, with Nez Perce and Yakama context in the background. These calendars track snow depth, bitter cold, the first bare ground, spring grasses, summer heat, and the running and rutting seasons of game rather than a strict 12/13 civic month grid. The 13-moon arc here gives your atlas a way to compare Basin and Plateau seasonal phases to other regions while clearly signaling that many local nations name moons more flexibly around water, forage, and elevation."
+        note: "The Great Basin / Plateau entry uses Shoshone, Uintah Ute, and Bannock month glosses as a backbone, with Nez Perce and Yakama context in the background. These calendars track snow depth, bitter cold, the first bare ground, spring grasses, summer heat, and the running and rutting seasons of game rather than a strict 12/13 civic month grid. The 13-moon arc here gives atlas a way to compare Basin and Plateau seasonal phases to other regions while clearly signaling that many local nations name moons more flexibly around water, forage, and elevation."
       },
 
       "nw-coast": {
@@ -921,7 +917,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Haisla language project materials with month names tied to salmon runs and winter conditions."
           }
         ],
-        note: "Northwest Coast calendars are deeply tied to tides, salmon runs, marine mammals, cedar work, and berry seasons. The 13 entries here braid publicly available moon names and glosses from Tlingit, Haida, W̱SÁNEĆ, Nuu-chah-nulth, Heiltsuk, and Haisla into an atlas-style comparison grid. Any ‘Northwest Coast moons’ layer in your app should be clearly presented as a cross-tribal ecological overview, not as a single canonical calendar for all coastal nations."
+        note: "Northwest Coast calendars are deeply tied to tides, salmon runs, marine mammals, cedar work, and berry seasons. The 13 entries here braid publicly available moon names and glosses from Tlingit, Haida, W̱SÁNEĆ, Nuu-chah-nulth, Heiltsuk, and Haisla into an atlas-style comparison grid. Any ‘Northwest Coast moons’ layer in app should be clearly presented as a cross-tribal ecological overview, not as a single canonical calendar for all coastal nations."
       },
 
       "california": {
@@ -1113,7 +1109,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "NWT education kit explaining how Dene ‘sah’ (moon/month) names are built around weather and animal behavior."
           }
         ],
-        note: "Subarctic and boreal-forest calendars track snow, ice, caribou, geese, ducks, berries, and river conditions. Cree and Innu provide full named month sets with strong glosses; Athabascan languages like Ahtna, Dena’ina, and Koyukon add detailed seasonal semantics. The 13-moon sequence above is a synthesis for your atlas’ comparison grid and should be labeled as such, not as a replacement for each nation’s own way of counting moons."
+        note: "Subarctic and boreal-forest calendars track snow, ice, caribou, geese, ducks, berries, and river conditions. Cree and Innu provide full named month sets with strong glosses; Athabascan languages like Ahtna, Dena’ina, and Koyukon add detailed seasonal semantics. The 13-moon sequence above is a synthesis for atlas’ comparison grid and should be labeled as such, not as a replacement for each nation’s own way of counting moons."
       },
 
       "arctic-inuit": {
@@ -1173,7 +1169,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Inuinnaqtun/Inuvialuit calendar describing tatqiqhiun ‘calendar’ as derived from tatqiq ‘moon’ and mapping months to land/animal cycles."
           }
         ],
-        note: "Across the Inuit North, month names are explicitly place-based and dialect-specific, keyed to events like returning light, seal pups, storms, ice conditions, and animal movements. The 13 entries here are a cross-regional comparison scaffold built from Iñupiaq, Nunavik Inuktitut, Nunavut Inuktut, and Inuinnaqtun/Inuvialuit teaching materials. Any unified ‘Arctic moons’ you design should be clearly labeled as a creative, pan-Arctic ecological layer, not as a single traditional calendar shared by all Inuit regions."
+        note: "Across the Inuit North, month names are explicitly place-based and dialect-specific, keyed to events like returning light, seal pups, storms, ice conditions, and animal movements. The 13 entries here are a cross-regional comparison scaffold built from Iñupiaq, Nunavik Inuktitut, Nunavut Inuktut, and Inuinnaqtun/Inuvialuit teaching materials. Any unified ‘Arctic moons’ designs should be clearly labeled as a creative, pan-Arctic ecological layer, not as a single traditional calendar shared by all Inuit regions."
       },
 
       "n-rockies": {
@@ -1236,7 +1232,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Galt Museum & Archives page listing 12 Blackfoot moon names with English glosses (Long Nights, Eagle Moon, Frog Moon, Chokecherries Ripe, etc.)."
           }
         ],
-        note: "Rockies and Interior Plateau calendars are tightly bound to foods, animals, and weather—camas digs, salmon runs, berry ripening, deer rut, snowmelt—rather than to an abstract grid. The 13 entries above braid Ktunaxa, Interior Salish (Séliš/Kalispel), Nez Perce, and Blackfoot month glosses into one comparison board. Any ‘Northern Rockies moons’ layer you build should be framed as a cross-tribal ecological synthesis, not as a replacement for each nation’s own calendar."
+        note: "Rockies and Interior Plateau calendars are tightly bound to foods, animals, and weather—camas digs, salmon runs, berry ripening, deer rut, snowmelt—rather than to an abstract grid. The 13 entries above braid Ktunaxa, Interior Salish (Séliš/Kalispel), Nez Perce, and Blackfoot month glosses into one comparison board. Any ‘Northern Rockies moons’ layer build should be framed as a cross-tribal ecological synthesis, not as a replacement for each nation’s own calendar."
       },
 
       "greenland": {
@@ -1289,7 +1285,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Scholarly overview of the Aagjuuk asterism and other Inuit sky/seasonal markers used from Alaska to East Greenland to signal the returning light of mid-winter."
           }
         ],
-        note: "For Greenland, the clearest published month set comes from Kalaallisut civic usage (loan-based month names aligned to the Gregorian calendar), documented by the Greenland Language Secretariat. Traditional Inughuit and Tunumiit calendars are taught through lunar, seasonal, and astronomical markers—especially the return of light—rather than through a public 12/13 ‘moons’ list. The entries above keep Kalaallisut names as a practical column while pairing them with pan-Greenland seasonal anchors; any ‘Greenland moons’ art you create should foreground this as a contemporary, Greenland-centered ecological calendar, not as a reconstruction of older local lunar series that communities have not chosen to publish online."
+        note: "For Greenland, the clearest published month set comes from Kalaallisut civic usage (loan-based month names aligned to the Gregorian calendar), documented by the Greenland Language Secretariat. Traditional Inughuit and Tunumiit calendars are taught through lunar, seasonal, and astronomical markers—especially the return of light—rather than through a public 12/13 ‘moons’ list. The entries above keep Kalaallisut names as a practical column while pairing them with pan-Greenland seasonal anchors; any ‘Greenland moons’ art created should foreground this as a contemporary, Greenland-centered ecological calendar, not as a reconstruction of older local lunar series that communities have not chosen to publish online."
       },
 
       
@@ -1411,7 +1407,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Articles on veintenas as 20-day periods and nemontemi as 5 ‘empty’ days, clarifying that these are solar cycle segments rather than lunar months."
           }
         ],
-        note: "The Central Mexican highlands use the xiuhpōhualli — 18 veintenas (20-day periods) plus 5 nemontemi — as a solar ritual year, not a set of 12 or 13 lunar ‘months.’ Modern Nahuatl uses metztli for ‘month,’ but the historical Mexica calendar is structured around these veintenas. The December-start mapping above is an artificial scaffold to let your atlas cross-scan regions; in many reconstructions the Aztec year begins near Atlacacauallo (around February). When you coin any 13-moon art names for this region, keep them clearly labeled as creative overlays inspired by veintena meanings (banner-raising, flower-offering, falling-fruit, sweeping-earth, mountain-festival, etc.), not as original Nahua moon names."
+        note: "The Central Mexican highlands use the xiuhpōhualli — 18 veintenas (20-day periods) plus 5 nemontemi — as a solar ritual year, not a set of 12 or 13 lunar ‘months.’ Modern Nahuatl uses metztli for ‘month,’ but the historical Mexica calendar is structured around these veintenas. The December-start mapping above is an artificial scaffold to let the atlas cross-scan regions; in many reconstructions the Aztec year begins near Atlacacauallo (around February). When coining any 13-moon art names for this region, keep them clearly labeled as creative overlays inspired by veintena meanings (banner-raising, flower-offering, falling-fruit, sweeping-earth, mountain-festival, etc.), not as original Nahua moon names."
       },
 
       "maya-lowlands": {
@@ -1468,7 +1464,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Museum and textbook notes that Wayeb’ (the last 5 days) was widely regarded as dangerous/liminal, when many activities were avoided. maya.nmai.si.edu"
           }
         ],
-        note: "For the Maya Lowlands, the best-documented named ‘months’ are the Haab’ solar months (18×20 days) plus the 5-day Wayeb’, recorded in colonial Yucatec sources and used alongside the Tzolk’in. These are not lunar months, but they give a stable, community-taught sequence of names like K’ank’in, Muwan, Pax, K’ayab, Kumk’u, Pop, etc., each with ecological and ritual associations (dry vs. rainy season, planting, granaries, bats, turtles, storms). In your atlas, treat the 13 entries above as a sampling scaffold for cross-region comparison, and keep any 13-moon creative names clearly labeled as solar-inspired art layers rather than as traditional ‘Maya moon’ names."
+        note: "For the Maya Lowlands, the best-documented named ‘months’ are the Haab’ solar months (18×20 days) plus the 5-day Wayeb’, recorded in colonial Yucatec sources and used alongside the Tzolk’in. These are not lunar months, but they give a stable, community-taught sequence of names like K’ank’in, Muwan, Pax, K’ayab, Kumk’u, Pop, etc., each with ecological and ritual associations (dry vs. rainy season, planting, granaries, bats, turtles, storms). In the atlas, treat the 13 entries above as a sampling scaffold for cross-region comparison, and keep any 13-moon creative names clearly labeled as solar-inspired art layers rather than as traditional ‘Maya moon’ names."
       },
 
       "maya-highlands": {
@@ -1529,7 +1525,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "J. Eric S. Thompson, ‘The Year of 365 Days’ — Table 8 lists Haab’ month names across K’iche’, Kaqchikel, Tzotzil, Tzeltal, Ixil, Poqomchi’, etc., with cross-language correspondences. mesoweb.com"
           }
         ],
-        note: "Highland Maya communities use the same underlying Haab’ structure as the lowlands — 18 named 20-day months plus 5 Wayeb’ days — but with language-specific forms in K’iche’, Kaqchikel, Tzotzil, Tzeltal, and others. The English glosses (Yellow Sun, Owl, Bat, New Sun, etc.) come from cross-language tables in works like Thompson’s and from museum educators. Many communities ritually start the civil year at Pop, not December; the December→November layout here is purely for cross-region comparison in your atlas. As with the lowlands, any 13-moon art set you build for the highlands should be framed as a creative solar-cycle overlay inspired by the Haab’ months and highland seasons, not as a traditional ‘lunar month’ system."
+        note: "Highland Maya communities use the same underlying Haab’ structure as the lowlands — 18 named 20-day months plus 5 Wayeb’ days — but with language-specific forms in K’iche’, Kaqchikel, Tzotzil, Tzeltal, and others. The English glosses (Yellow Sun, Owl, Bat, New Sun, etc.) come from cross-language tables in works like Thompson’s and from museum educators. Many communities ritually start the civil year at Pop, not December; the December→November layout here is purely for cross-region comparison in the atlas. As with the lowlands, any 13-moon art set built for the highlands should be framed as a creative solar-cycle overlay inspired by the Haab’ months and highland seasons, not as a traditional ‘lunar month’ system."
       },
 
       "oaxaca-highlands-isthmus": {
@@ -1594,7 +1590,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "UNAM comparative work on Zapotec day names and their relationships with Nahua terms, useful background for later cross-referencing signs and seasons."
           }
         ],
-        note: "Zapotec and Mixtec communities historically used the shared Mesoamerican 18×20 + 5 structure (plus a 260-day ritual count), but solid community-published veintena name lists for a single town are not widely online. The grid above therefore uses seasonal anchors (cool-dry storage, terrace repair, first rains, tasseling, harvest, nameless days) as a respectful scaffold for your art. Any ‘regional moons’ you coin here should be clearly labeled as creative, ecological titles inspired by Zapotec and Mixtec agricultural rounds, not as specific community month names."
+        note: "Zapotec and Mixtec communities historically used the shared Mesoamerican 18×20 + 5 structure (plus a 260-day ritual count), but solid community-published veintena name lists for a single town are not widely online. The grid above therefore uses seasonal anchors (cool-dry storage, terrace repair, first rains, tasseling, harvest, nameless days) as a respectful scaffold for art. Any ‘regional moons’ coined here should be clearly labeled as creative, ecological titles inspired by Zapotec and Mixtec agricultural rounds, not as specific community month names."
       },
 
       "western-mexico": {
@@ -1651,7 +1647,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Classic ethnology on the Náayeri mitote cycle, outlining multiple named mitotes spanning winter, planting, mid-year, harvest, and year-turning ceremonies."
           }
         ],
-        note: "Western Mexico’s Purépecha, Wixárika, and Cora communities keep richly structured ritual and agricultural years. Purépecha sources describe an 18×20 + 5 veintena calendar; Wixárika and Cora publish seasonal rounds and mitote series rather than neat 12/13 ‘moon’ lists. The entries above use their public seasonal anchors (New Fire, hikuri pilgrimage, rain prayers, mid-year mitotes, harvest rites) as comparative prompts. Any 13-moon titles you design for this region should be presented as creative ecological/ritual overlays inspired by these cycles, not as traditional named months."
+        note: "Western Mexico’s Purépecha, Wixárika, and Cora communities keep richly structured ritual and agricultural years. Purépecha sources describe an 18×20 + 5 veintena calendar; Wixárika and Cora publish seasonal rounds and mitote series rather than neat 12/13 ‘moon’ lists. The entries above use their public seasonal anchors (New Fire, hikuri pilgrimage, rain prayers, mid-year mitotes, harvest rites) as comparative prompts. Any 13-moon titles designed for this region should be presented as creative ecological/ritual overlays inspired by these cycles, not as traditional named months."
       },
 
       "northern-mexico-arid": {
@@ -1716,7 +1712,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Busuréliame cultural school descriptions of the yearly cycle: planting ceremony, Yúmari, corn-flowering ceremony, harvest and Day of the Dead observances."
           }
         ],
-        note: "For the arid north of Mexico and the O’odham–Yaqui–Rarámuri corridor, O’odham provides a full, tribally-published set of month names with English glosses; Yaqui and Rarámuri make their ceremonial and agricultural anchors public without providing a simple ‘12/13 month’ list. The synthesis above keeps O’odham month names intact while weaving in Yaqui feasts and Rarámuri agro-ceremonial markers. When you design 13-moon art for this region, keep the O’odham terminology clearly attributed and frame any blended titles as your interpretive, cross-cultural overlay rather than as a unified traditional calendar."
+        note: "For the arid north of Mexico and the O’odham–Yaqui–Rarámuri corridor, O’odham provides a full, tribally-published set of month names with English glosses; Yaqui and Rarámuri make their ceremonial and agricultural anchors public without providing a simple ‘12/13 month’ list. The synthesis above keeps O’odham month names intact while weaving in Yaqui feasts and Rarámuri agro-ceremonial markers. When designing 13-moon art for this region, keep the O’odham terminology clearly attributed and frame any blended titles as interpretive, cross-cultural overlay rather than as a unified traditional calendar."
       },
 
       "central-am-pacific": {
@@ -1772,7 +1768,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Linguistic and ethnohistorical summaries used to contextualize Pacific-coast calendars without projecting modern month lists onto them."
           }
         ],
-        note: "Along the Central American Pacific coast, we have a reconstructed Nicarao veintena sequence (using Nahua day-sign names), living Pipil/Nawat and Lenca seasonal rounds, and historical Chorotega/Subtiaba/Xinka calendars known mostly from chronicles. The grid above treats Nicarao as the named 20-day scaffold while using Pipil and Lenca practices as ecological/ritual anchors (Candelaria, Cross Day, first rains, harvest). Your 13-moon layer for this region should be clearly presented as an artistic synthesis built from these overlapping sources, not as a direct reproduction of any one community’s sacred calendar."
+        note: "Along the Central American Pacific coast, we have a reconstructed Nicarao veintena sequence (using Nahua day-sign names), living Pipil/Nawat and Lenca seasonal rounds, and historical Chorotega/Subtiaba/Xinka calendars known mostly from chronicles. The grid above treats Nicarao as the named 20-day scaffold while using Pipil and Lenca practices as ecological/ritual anchors (Candelaria, Cross Day, first rains, harvest). 13-moon layer for this region should be clearly presented as an artistic synthesis built from these overlapping sources, not as a direct reproduction of any one community’s sacred calendar."
       },
 
       "central-am-caribbean": {
@@ -1826,7 +1822,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Linguistic and ethnographic overviews giving background on coastal vs. interior lifeways, rainfall patterns, and subsistence calendars in La Moskitia."
           }
         ],
-        note: "On the Central American Caribbean coast, Miskitu materials publicly provide month names for the 12 Gregorian months (with kâti ‘month/moon’), while Garifuna practice today blends the Gregorian calendar with strong ritual anchors like Settlement Day and family-organized dügü ceremonies. No community-published 12/13 ‘traditional moon’ list exists for this belt. The entries above therefore pair Miskitu month lexemes with Garifuna seasonal and ritual anchors as a cross-scan tool. Any 13-moon sequence you create for this region should be clearly framed as a contemporary, intercultural ecological calendar rather than as an inherited lunar system."
+        note: "On the Central American Caribbean coast, Miskitu materials publicly provide month names for the 12 Gregorian months (with kâti ‘month/moon’), while Garifuna practice today blends the Gregorian calendar with strong ritual anchors like Settlement Day and family-organized dügü ceremonies. No community-published 12/13 ‘traditional moon’ list exists for this belt. The entries above therefore pair Miskitu month lexemes with Garifuna seasonal and ritual anchors as a cross-scan tool. Any 13-moon sequence created for this region should be clearly framed as a contemporary, intercultural ecological calendar rather than as an inherited lunar system."
       },
 
     
@@ -1896,7 +1892,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Kichwa (Ecuador) “four Raymi” cycle used today (Pawkar Raymi ~ March equinox, Inti Raymi ~ June solstice, Killa/Kuya Raymi ~ September equinox, Kapak/Capac Raymi ~ December solstice). Not Your Average American+1"
           }
         ],
-        note: "How to read this\n• The Quechua/Inca column gives the named ceremonial months most consistently cited in scholarly/heritage summaries (rooted in chroniclers like Guamán Poma). Exact month-to-Gregorian mapping varies by source; keep this as a cross-scan for your poetic moons. Encyclopedia Britannica\n• Kichwa (Ecuador) widely keeps the four Raymi cycle pinned to solstices/equinoxes; these are excellent “anchor moons” (Pawkar, Inti, Killa/Kuya, Kapak). Not Your Average American\n• Aymara communities publicly mark Willkakuti / Machaq Mara at the June 21 solstice (Bolivian national holiday) and describe the year in seasonal blocks; public month-name tables are not standard. Office Holidays"
+        note: "How to read this\n• The Quechua/Inca column gives the named ceremonial months most consistently cited in scholarly/heritage summaries (rooted in chroniclers like Guamán Poma). Exact month-to-Gregorian mapping varies by source; keep this as a cross-scan for poetic moons. Encyclopedia Britannica\n• Kichwa (Ecuador) widely keeps the four Raymi cycle pinned to solstices/equinoxes; these are excellent “anchor moons” (Pawkar, Inti, Killa/Kuya, Kapak). Not Your Average American\n• Aymara communities publicly mark Willkakuti / Machaq Mara at the June 21 solstice (Bolivian national holiday) and describe the year in seasonal blocks; public month-name tables are not standard. Office Holidays"
       },
 
       "northern-andes": {
@@ -1950,7 +1946,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Kichwa (Ecuador) “Four Raymi” cycle still publicly observed (Pawkar Raymi ≈ March equinox; Inti Raymi ≈ June solstice; Killa/Kuya Raymi ≈ September equinox; Kapak/Capac Raymi ≈ December solstice). Not Your Average American+2Not Your Average American+2"
           }
         ],
-        note: "Notes: For Kogi/Wiwa/Arhuaco, Nasa, Misak, detailed month-by-month public lists aren’t typically posted by communities; their calendars are taught through seasonal/ritual cycles. Where needed later, we can add seasonal anchor columns rather than month names to keep things respectful and accurate.\n\nWhy this layout?\n• Muisca give us a named lunar sequence with glosses (via Duquesne → Humboldt → modern syntheses). It’s perfect as a column in your atlas, with caveats about mapping to Gregorian months. Wikipédia\n• Kichwa today keep an explicit Raymi cycle tied to solstices/equinoxes; those are solid anchors for creative “moons” that reflect highland seasonality. Not Your Average American+2Not Your Average American+2"
+        note: "Notes: For Kogi/Wiwa/Arhuaco, Nasa, Misak, detailed month-by-month public lists aren’t typically posted by communities; their calendars are taught through seasonal/ritual cycles. Where needed later, we can add seasonal anchor columns rather than month names to keep things respectful and accurate.\n\nWhy this layout?\n• Muisca give us a named lunar sequence with glosses (via Duquesne → Humboldt → modern syntheses). It’s perfect as a column in atlas, with caveats about mapping to Gregorian months. Wikipédia\n• Kichwa today keep an explicit Raymi cycle tied to solstices/equinoxes; those are solid anchors for creative “moons” that reflect highland seasonality. Not Your Average American+2Not Your Average American+2"
       },
 
       "southern-cone": {
@@ -2009,7 +2005,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Aónikenk/Tehuelche: reliable ethnographic summaries; seasonal subsistence notes. (Dedicated month lists aren’t public; we’ll use seasonal anchors.) ehrafworldcultures.yale.edu+1"
           }
         ],
-        note: "Takeaway: Mapuche give us a strong, living solstitial new year and seasonal round; Selk’nam/Tehuelche are best handled via seasonal/ceremonial anchors from respected ethnography rather than fixed 12/13 month names.\n\nQuick notes\n• Mapuche: the clearest, living public anchor is Wiñoy Tripantu at the June solstice; much of the year is understood in four seasons (walüng–rimü–pükem–pewü) with local rites like Ngillatun. Wikipédia+1\n• Selk’nam: rather than public month lists, we have cosmology & ritual (e.g., Moon-Woman Kreeh, Hain). Use these as seasonal anchors for your 13-moon creative synthesis. thereedfoundation.org+1\n• Aónikenk / Tehuelche: sources are strongest on seasonal movement & subsistence; again, ideal as anchor cues rather than imposing 12/13 named months. ehrafworldcultures.yale.edu"
+        note: "Takeaway: Mapuche give us a strong, living solstitial new year and seasonal round; Selk’nam/Tehuelche are best handled via seasonal/ceremonial anchors from respected ethnography rather than fixed 12/13 month names.\n\nQuick notes\n• Mapuche: the clearest, living public anchor is Wiñoy Tripantu at the June solstice; much of the year is understood in four seasons (walüng–rimü–pükem–pewü) with local rites like Ngillatun. Wikipédia+1\n• Selk’nam: rather than public month lists, we have cosmology & ritual (e.g., Moon-Woman Kreeh, Hain). Use these as seasonal anchors for 13-moon creative synthesis. thereedfoundation.org+1\n• Aónikenk / Tehuelche: sources are strongest on seasonal movement & subsistence; again, ideal as anchor cues rather than imposing 12/13 named months. ehrafworldcultures.yale.edu"
       },
 
       "chaco": {
@@ -2084,7 +2080,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Guaraní (for the “transition” edge of the Chaco) — widely taught Guaraní month names (jasyteĩ, jasykõi…), i.e., Gregorian months in Guaraní; helpful if you want an Indigenous-language “month name” column for cross-scan. logos.it+1"
           }
         ],
-        note: "In the Chaco, public materials tend to present seasonal cycles (rains/dry, harvests, star cues) rather than posted 12/13 “lunar month-name” lists. Below I include columns only where something usable is public.\n\nHow to use this grid\n• Wichí gives you named “moons” (Heladas, Flores, Algarroba, Cosecha) that are explicitly seasonal—perfect poetic anchors. pueblosoriginarios.com\n• Qom / Pilagá: strong seasonal & sky-cue structure (Moon = ca’agoxoic; year paced by Pleiades/Orion + rains/dry) rather than posted month lists—use as ecological timing guides. chacoindigena.net+1\n• Guaraní: the jasy- month names are widely taught for Gregorian months (e.g., Jasyteĩ = January, Jasykõi = February). If you want a strictly “indigenous-language month names” column to cross-check against your art moons, this is the cleanest public set for the Chaco fringe. logos.it\n\nSource pointers (for your bibliography)\n• Wichí Four-Moon Calendar (with Spanish explanations). pueblosoriginarios.com\n• Qom (Toba) lexicon (moon/month = ca’agoxoic; example question “¿Qué mes es éste?”). chacoindigena.net\n• Qom temporalities & the Moon (EIB research). ResearchGate\n• Pilagá sky & time (Pleiades / Orion cycle in annual timing). publicaciones.fcnym.unlp.edu.ar+1\n• Enlhet–Enxet profiles (linguistic/people overview). tierraviva.org.py+1\n• Nivaclé profiles (linguistic/people overview). tierraviva.org.py\n• Ayoreo overview (territory & current issues). survivalinternational.org\n• Guaraní month names (teaching resources). logos.it"
+        note: "In the Chaco, public materials tend to present seasonal cycles (rains/dry, harvests, star cues) rather than posted 12/13 “lunar month-name” lists. Below I include columns only where something usable is public.\n\nHow to use this grid\n• Wichí gives named “moons” (Heladas, Flores, Algarroba, Cosecha) that are explicitly seasonal—perfect poetic anchors. pueblosoriginarios.com\n• Qom / Pilagá: strong seasonal & sky-cue structure (Moon = ca’agoxoic; year paced by Pleiades/Orion + rains/dry) rather than posted month lists—use as ecological timing guides. chacoindigena.net+1\n• Guaraní: the jasy- month names are widely taught for Gregorian months (e.g., Jasyteĩ = January, Jasykõi = February). This is the cleanest public set for the Chaco fringe. logos.it\n\nSource pointers\n• Wichí Four-Moon Calendar (with Spanish explanations). pueblosoriginarios.com\n• Qom (Toba) lexicon (moon/month = ca’agoxoic; example question “¿Qué mes es éste?”). chacoindigena.net\n• Qom temporalities & the Moon (EIB research). ResearchGate\n• Pilagá sky & time (Pleiades / Orion cycle in annual timing). publicaciones.fcnym.unlp.edu.ar+1\n• Enlhet–Enxet profiles (linguistic/people overview). tierraviva.org.py+1\n• Nivaclé profiles (linguistic/people overview). tierraviva.org.py\n• Ayoreo overview (territory & current issues). survivalinternational.org\n• Guaraní month names (teaching resources). logos.it"
       },
 
       "amazon-west": {
@@ -2300,7 +2296,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Iwokrama & NRDDB (Makushi hub): publications & calendars used for community education/outreach. iwokrama.org"
           }
         ],
-        note: "Many Guiana Shield communities publish seasonal rounds (rains, river level, fruiting/fish cycles) rather than named “lunar months.” The grid maps English glosses of those anchors Dec→Nov so you can cross-scan for your creative 13-Moon synthesis. Wapichan SRDC 2012 and Wajãpi seasonal calendars are aligned month-by-month; Makushi and Wayana–Apalaí columns add star and assembly cues. This region is phenology-rich: river level, two wet + two dry seasons, star cues (e.g., Pleiades for Makushi), and fruiting/hunting/fishing windows are the backbone of published calendars."
+        note: "Many Guiana Shield communities publish seasonal rounds (rains, river level, fruiting/fish cycles) rather than named “lunar months.” The grid maps English glosses of those anchors Dec→Nov so can cross-scan for creative 13-Moon synthesis. Wapichan SRDC 2012 and Wajãpi seasonal calendars are aligned month-by-month; Makushi and Wayana–Apalaí columns add star and assembly cues. This region is phenology-rich: river level, two wet + two dry seasons, star cues (e.g., Pleiades for Makushi), and fruiting/hunting/fishing windows are the backbone of published calendars."
       },
 
       "pacific-coast-sa": {
@@ -2363,7 +2359,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Moche / Chimú (North Peru coast; reconstructed) — scholarship on lunar/sea iconography and ritual timing (fishing at night; myth–calendar debates). digitalcommons.library.umaine.edu+1"
           }
         ],
-        note: "Along this coast, calendars are lunar–tidal + rainy/dry season systems tied to fishing, canoe travel, planting, and woodcutting—more phenology than public “lists of 13 moon names.” The three columns above (Tsáchila, Chachi, Eperara Siapidaará) are seasonal/lunar–tide anchors so you can coin non-appropriative, region-true art names. Historical Moche/Chimú materials can be woven in as labeled texture, not as a living calendar."
+        note: "Along this coast, calendars are lunar–tidal + rainy/dry season systems tied to fishing, canoe travel, planting, and woodcutting—more phenology than public “lists of 13 moon names.” The three columns above (Tsáchila, Chachi, Eperara Siapidaará) are seasonal/lunar–tide anchors so can coin non-appropriative, region-true art names. Historical Moche/Chimú materials can be woven in as labeled texture, not as a living calendar."
       },
 
       "southern-amazon": {
@@ -2572,7 +2568,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "General Likan Antai / Atacameño context (people and subsistence today), used to read the agricultural calendar. fucoa.cl"
           }
         ],
-        note: "For this high-desert fringe, treat the Socaire (Likan Antai) agro-ritual calendar as your spine: solstices/equinoxes, irrigation turns, canal cleaning, frost vigilance, and sowing/harvest windows. Aymara provide a clear public anchor at June 21 (Willkakuti/Machaq Mara), while Kolla/Jujuy sources highlight August as Pachamama Month. Rather than imposing 13 fixed moon names, use these documented seasonal and ritual anchors to coin gentle, non-appropriative titles like Canal-Cleaning Moon, Saywa-Shadow Moon, Frost-Watch Moon, Pachamama Offerings Moon, or Solstice-New-Year Moon."
+        note: "For this high-desert fringe, treat the Socaire (Likan Antai) agro-ritual calendar as spine: solstices/equinoxes, irrigation turns, canal cleaning, frost vigilance, and sowing/harvest windows. Aymara provide a clear public anchor at June 21 (Willkakuti/Machaq Mara), while Kolla/Jujuy sources highlight August as Pachamama Month. Rather than imposing 13 fixed moon names, use these documented seasonal and ritual anchors to coin gentle, non-appropriative titles like Canal-Cleaning Moon, Saywa-Shadow Moon, Frost-Watch Moon, Pachamama Offerings Moon, or Solstice-New-Year Moon."
       },
 
       
@@ -2648,7 +2644,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Documented in French ethnology; some resources in Polynesian language revitalization archives."
           }
         ],
-        note: "✨ This region is especially rich because Polynesian languages share cognates across the months—so you can see December = Welehu (Hawaiian) ~ Tesema (Samoan/Tongan) ~ Tētema (Tahiti)."
+        note: "✨ This region is especially rich because Polynesian languages share cognates across the months—so can see December = Welehu (Hawaiian) ~ Tesema (Samoan/Tongan) ~ Tētema (Tahiti)."
       },
 
       "micronesia": {
@@ -2703,7 +2699,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Rjabchikov’s work on Polynesian lunar inscription, as comparative reference."
           }
         ],
-        note: "Unfortunately, I did not find a reliably published, community-aligned full lunar-month list for Micronesia in the searches I ran. The Pingelapese calendar is noted in passing on Wikipedia as having 12 months (“The Moon first appears in March, they name this month Kahlek.”) in their lunar calendar tradition."
+        note: "I did not find a reliably published, community-aligned full lunar-month list for Micronesia. The Pingelapese calendar is noted in passing on Wikipedia as having 12 months (“The Moon first appears in March, they name this month Kahlek.”) in their lunar calendar tradition."
       },
 
       "png-highlands": {
@@ -2763,7 +2759,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "National cultural and environmental publications give farming/season windows used alongside ritual timing."
           }
         ],
-        note: "Columns only where public detail exists. These are seasonal/ritual anchors (not fixed “moon names”). Use them to keep your art names ecologically true to place."
+        note: "Columns only where public detail exists. These are seasonal/ritual anchors (not fixed “moon names”). Use them to keep art names ecologically true to place."
       },
 
       "png-low-solomon": {
@@ -2883,7 +2879,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Rotuma has a published lunar calendar (Pulan Fäeag Rotuạm) aligned to planting and fishing seasons."
           }
         ],
-        note: "✨ Key insights for your art project\n• Fiji has the clearest 12–13 month sequence in public use today; very fish- and yam-centered.\n• Vanuatu month anchors are strongly about yam rituals (planting, staking, harvesting, storing) plus breadfruit and fishing.\n• Kanak New Caledonia calendars are ceremonial yam calendars — the yam defines the year and ceremonies."
+        note: "✨ Key insights for art\n• Fiji has the clearest 12–13 month sequence in public use today; very fish- and yam-centered.\n• Vanuatu month anchors are strongly about yam rituals (planting, staking, harvesting, storing) plus breadfruit and fishing.\n• Kanak New Caledonia calendars are ceremonial yam calendars — the yam defines the year and ceremonies."
       },
 
       "n-australia-torres": {
@@ -2952,7 +2948,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Tagai & Torres Strait sky lore (seasonal signals) — education explainer (QCAA)."
           }
         ],
-        note: "Notes for your creative set\n• Torres Strait provides excellent wind/tide/sea-country anchors (Kuki, Sager, Nay Gay) plus turtle/dugong timing—great raw material for non-appropriative names like Monsoon-Drum Moon, Trade-Winds Moon, Hatchling Moon, Calm-Sea Moon.\n• Tiwi/Larrakia/Ngan’gi/Anindilyakwa publish community-approved seasonal calendars. You can safely translate their public seasonal cues (fire/smoke; cool dry; build-up storms; key blooms/fish fat) into moon titles without lifting sacred names.\n• If you’d like moon-phase terminology itself (not monthly anchors), Bininj Kunwok has a public page naming moon phases (handy for artwork captions)."
+        note: "Notes for creative set\n• Torres Strait provides excellent wind/tide/sea-country anchors (Kuki, Sager, Nay Gay) plus turtle/dugong timing—great raw material for non-appropriative names like Monsoon-Drum Moon, Trade-Winds Moon, Hatchling Moon, Calm-Sea Moon.\n• Tiwi/Larrakia/Ngan’gi/Anindilyakwa publish community-approved seasonal calendars. You can safely translate their public seasonal cues (fire/smoke; cool dry; build-up storms; key blooms/fish fat) into moon titles without lifting sacred names.\n• Bininj Kunwok has a public page naming moon phases (handy for artwork captions)."
       },
 
       "australian-desert": {
@@ -3020,7 +3016,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Overview pieces on Aboriginal seasonal calendars (context; variability of 5–8+ seasons; Arrernte ≈ five seasons referenced)."
           }
         ],
-        note: "How to use this grid for your 13-Moon art set\n• Desert calendars are phenology-first: build-up heat, first storms, wet, cool/cold dry, warming winds—plus burning, ripening foods, river pulses. Those convert beautifully to non-appropriative titles like Build-Up Thunder Moon, Cold-Camp Moon, Patch-Burn Moon, First-Rain Moon, Dust-Wind Moon.\n• Where communities publish named seasons (e.g., Martu: Kurlijarra, Tulparra, Yaltapuru, Pirrkina, Kurlamarra), I mapped them across the Gregorian months to let you cross-scan with Walmajarri/Warlpiri/Arrernte anchors before you coin final names."
+        note: "• Desert calendars are phenology-first: build-up heat, first storms, wet, cool/cold dry, warming winds—plus burning, ripening foods, river pulses.\n• Where communities publish named seasons (e.g., Martu: Kurlijarra, Tulparra, Yaltapuru, Pirrkina, Kurlamarra), mapped across the Gregorian months to allow cross-scan with Walmajarri/Warlpiri/Arrernte anchors before coining final names."
       },
 
       "se-australia": {
@@ -3091,7 +3087,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "D’harawal (Sydney/Illawarra) — education pages that draw on the BoM IWK D’harawal calendar (six named seasons, with typical month windows)."
           }
         ],
-        note: "Quick takeaways for your 13-Moon naming work\n• Wurundjeri gives clear monthly anchors (eel fattening, wombat/cold, orchids/wattles, tadpoles, grass flowering, kangaroo-apple) you can translate into neutral titles like Eel-Run Moon, Orchid Moon, Tadpole Moon.\n• Gunditjmara is a perfect wetland/aquaculture palette (Big Wet, Flowering Time, Fattening Up) tied to kooyang (eel)—great for Big-Wet Moon, Flowering-Swarms Moon, Fattening Moon.\n• D’harawal (Sydney/Illawarra) offers six widely taught season names you can borrow as inspiration only for neutral glosses like Quoll-Calls Moon, Lyrebird-Song Moon, etc."
+        note: "Quick takeaways for 13-Moon naming work\n• Wurundjeri gives clear monthly anchors (eel fattening, wombat/cold, orchids/wattles, tadpoles, grass flowering, kangaroo-apple) can translate into neutral titles like Eel-Run Moon, Orchid Moon, Tadpole Moon.\n• Gunditjmara is a perfect wetland/aquaculture palette (Big Wet, Flowering Time, Fattening Up) tied to kooyang (eel)—great for Big-Wet Moon, Flowering-Swarms Moon, Fattening Moon.\n• D’harawal (Sydney/Illawarra) offers six widely taught season names to borrow as inspiration only for neutral glosses like Quoll-Calls Moon, Lyrebird-Song Moon, etc."
       },
       "aotearoa": {
         heroName: "aotearoa.png",
@@ -3361,7 +3357,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "Plain-language explanation of October’s name and Izumo vs. rest-of-Japan usage (Kamiarizuki at Izumo)."
           }
         ],
-        note: "For easy cross-scan we map the traditional month names to their common modern (Gregorian) pairing. Historically these names belong to the old lunisolar months (kyūreki), which can drift about ~1 month later than Gregorian; use as gloss anchors for your art, not strict phenology. When we scan across the archipelago (Yamato, Emishi, Hayato, Kumaso, Izumo, Azumi, Inland Sea seafarers, Hokuriku fisherfolk, etc.), we don’t see a dozen separately documented “named moons” in the same way we have for Ainu or for Algonquian / Iroquois / Anishinaabe in North America. The best-preserved named-month system in the Japanese islands is Ainu (Hokkaidō and Sakhalin). The Yamato / Wa state (and later classical Japan) shifted early to Chinese-derived lunisolar calendars, and the official state ritual calendar became the dominant system."
+        note: "For easy cross-scan we map the traditional month names to their common modern (Gregorian) pairing. Historically these names belong to the old lunisolar months (kyūreki), which can drift about ~1 month later than Gregorian; use as gloss anchors for art, not strict phenology. When we scan across the archipelago (Yamato, Emishi, Hayato, Kumaso, Izumo, Azumi, Inland Sea seafarers, Hokuriku fisherfolk, etc.), we don’t see a dozen separately documented “named moons” in the same way we have for Ainu or for Algonquian / Iroquois / Anishinaabe in North America. The best-preserved named-month system in the Japanese islands is Ainu (Hokkaidō and Sakhalin). The Yamato / Wa state (and later classical Japan) shifted early to Chinese-derived lunisolar calendars, and the official state ritual calendar became the dominant system."
       },
 
       "korean-peninsula": {
@@ -3493,7 +3489,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
             desc: "General explanation that bega = month, 12–13 lunar months; occupational month-names vary by group."
           }
         ],
-        note: "In the Lower Amur cluster, much time-reckoning is phase/season activity–based (new/full/quarters → netting, weirs, seal, salmon, reindeer moves) rather than a pan-regional set of poetic month names. The Evenk data give the clearest named months; for others we anchor what the month/phase was for (fish runs, camp moves, rites), matching your project’s “inspired, not appropriated” brief."
+        note: "In the Lower Amur cluster, much time-reckoning is phase/season activity–based (new/full/quarters → netting, weirs, seal, salmon, reindeer moves) rather than a pan-regional set of poetic month names. The Evenk data give the clearest named months; for others we anchor what the month/phase was for (fish runs, camp moves, rites), matching project’s “inspired, not appropriated” brief."
       },
       "siberian-arctic-far-east": {
         heroName: "siberian-arctic-far-east.png",
@@ -5623,7 +5619,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
         moons13: [
           "1. December — Sumerian: winter lunations in this zone are contextualized as months of thick cold and rains in Ur/Nippur tables; they overlap the Akkadian month Ṭebētu. Babylonian/Akkadian: Ṭebētu (10th month of the standard list). Old Assyrian: local names not securely aligned to this slot. Hurrian: winter is a season when the moon-god Kušuḫ has prominent cultic precedence and night watches/omens are emphasized.",
           "2. January — Sumerian: no single, securely glossed Ur-type label that maps neatly to January, but late-winter rain and chill continue. Babylonian/Akkadian: Šabāṭu (11th month). Old Assyrian: fragmentary month lists do not give a clear one-to-one for Šabāṭu. Hurrian: winter moon rites and omen series continue without a preserved civic month name.",
-          "3. February — Sumerian: late-winter lunation before New Year; again, no widely agreed Ur/Nippur label tied specifically to February in your December-start grid. Babylonian/Akkadian: Addāru (12th month). Old Assyrian: no securely matched Kaneš month for this slot. Hurrian: late-winter moon watching before spring campaigns and journeys.",
+          "3. February — Sumerian: late-winter lunation before New Year; again, no widely agreed Ur/Nippur label tied specifically to February in December-start grid. Babylonian/Akkadian: Addāru (12th month). Old Assyrian: no securely matched Kaneš month for this slot. Hurrian: late-winter moon watching before spring campaigns and journeys.",
           "4. Intercalary Addāru II — Sumerian: when the lunar year falls behind the agricultural and cultic year, an extra lunation is inserted; Sumerian month glosses simply repeat the functional cycle rather than naming a distinct '13th.' Babylonian/Akkadian: Addāru II (a second Addāru) used as a leap month when needed. Old Assyrian: intercalation practice is less clearly documented in surviving lists. Hurrian: extra lunations are implied by seasonal fit but not named.",
           "5. March — Sumerian (Ur/Nippur): bara₂-zag(.gar), glossed as 'month when the [ritual] stands before the throne' or 'proxies are set by the throne,' the New Year set-up month. Babylonian/Akkadian: Nisannu (1st month), home of the Akītu New Year festival. Assyrian: nīsannu adopted as the New Year month in later Assyrian usage. Hurrian: spring New Year purifications and moon-linked rituals are inferred by analogy to surrounding cultures.",
           "6. April — Sumerian: ezem.gu₄-si-su, 'festival when the horned oxen go forth,' tied to ploughing and field work. Babylonian/Akkadian: Ayyāru (2nd month), often glossed 'blossoming.' Assyrian: local names in Old Assyrian are fragmentary; later Assyria follows the Babylonian Ayyāru. Hurrian: spring pasture and planting rites under strong lunar and astral omens.",
@@ -5633,7 +5629,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
           "10. August — Sumerian: kin dINANNA, 'rectification of Inanna,' a month associated with rites for Inanna/Ishtar. Babylonian/Akkadian: Ulūlu (6th month). Assyrian: Ulūlu in later adoption. Hurrian: late-summer cultic attention to storm and fertility deities, under the oversight of the moon for omen-taking.",
           "11. Intercalary Ulūlu II — Sumerian: again, an extra lunation may appear functionally to realign cult and season; city-specific calendars repeat earlier month-functions. Babylonian/Akkadian: Ulūlu II (a second Ulūlu) as another possible leap month. Assyrian: follows Babylonian intercalation patterns in first-millennium practice. Hurrian: intercalary handling is not preserved as a named month.",
           "12. September — Sumerian: turn toward autumn festivals; the exact Ur/Nippur gloss corresponding to Tašrītu is debated. Babylonian/Akkadian: Tašrītu (7th month), an important autumn New Year in first-millennium practice. Assyrian: Tašrītu as well. Hurrian: autumn festivals and royal rituals under lunar timing.",
-          "13. October–November band — Sumerian: late autumn rites, including months that correspond to Araḫsamnu and Kislimu, focus on closing the agricultural year and preparing for winter. Babylonian/Akkadian: Araḫsamnu (8th) followed by Kislimu (9th), completing the cycle that your grid anchors to November. Assyrian: the same named months in Neo-Assyrian practice. Hurrian: winter-approach rites and moon-priority in prayer and omen lists."
+          "13. October–November band — Sumerian: late autumn rites, including months that correspond to Araḫsamnu and Kislimu, focus on closing the agricultural year and preparing for winter. Babylonian/Akkadian: Araḫsamnu (8th) followed by Kislimu (9th), completing the cycle that grid anchors to November. Assyrian: the same named months in Neo-Assyrian practice. Hurrian: winter-approach rites and moon-priority in prayer and omen lists."
         ],
         links: [
           {
@@ -6673,7 +6669,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
       }
     };
     
-    // ------- Region/sub renderers (reuse your d3 layers) -------
+    // ------- Region/sub renderers (reuse d3 layers) -------
     async function renderRegionView(slug){
       const entry = CATALOG[slug];
       if (!entry){ showPage('world'); return; }
@@ -6682,7 +6678,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
       // --- Region hero art (optional) ---
       const REGION_HERO = {
           "north-america":   "north_america.png",
-          "meso-caribbean":  "central_america.png",      // your "Central America & Caribbean" page
+          "meso-caribbean":  "central_america.png",      // "Central America & Caribbean" page
           "south-america":   "south_america.png",
           "europe":          "europe.png",
           "mena":            "north_africa_middle_east.png",
@@ -6840,7 +6836,7 @@ Approx. 120 global Indigenous moon-phase systems documented so far — spanning 
         links.appendChild(li);
       }
     
-      // Keep your back buttons wired
+      // Keep back buttons wired
       document.getElementById('backRegion').onclick = (e)=>{ e.preventDefault(); navigateTo(`?view=region&slug=${encodeURIComponent(regionSlug)}`); };
       document.getElementById('backWorld2').onclick = (e)=>{ e.preventDefault(); navigateTo(`?`); };
     }
